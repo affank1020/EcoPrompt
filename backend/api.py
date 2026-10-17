@@ -1,6 +1,8 @@
+import os
 from typing import Literal
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import tiktoken
 from tiktoken import Encoding
@@ -15,7 +17,19 @@ compressor = Compressor()
 compressor.warm_up()
 
 app = FastAPI()
+ALLOWED_ORIGINS = [
+      origin.strip()
+      for origin in os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+      if origin.strip()
+]   
 
+app.add_middleware(
+      CORSMiddleware,
+      allow_origins=ALLOWED_ORIGINS,
+      allow_origin_regex=r"chrome-extension://.*",
+      allow_methods=["GET", "POST"],
+      allow_headers=["Content-Type", "Authorization"],
+)
 
 class PromptRequest(BaseModel):
     prompt: str
