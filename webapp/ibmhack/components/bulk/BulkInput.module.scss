@@ -1,0 +1,99 @@
+@use "../../styles/variables" as *;
+
+.input {
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-3;
+}
+
+.split {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-2;
+}
+
+.splitLabel {
+    font-size: 13px;
+    color: $muted;
+}
+
+.delimiter {
+    width: 72px;
+    padding: 6px 10px;
+    font-family: $font-mono;
+    font-size: 13px;
+    border: 1px solid $border;
+    border-radius: $radius-sm;
+
+    &:focus {
+        outline: none;
+        border-color: $water-500;
+    }
+}
+
+.textarea {
+    width: 100%;
+    padding: $space-3 $space-4;
+    font: inherit;
+    font-size: 14px;
+    line-height: 1.6;
+    color: $ink;
+    background: $surface-alt;
+    border: 1px solid $border;
+    border-radius: $radius-md;
+    resize: vertical;
+
+    &:focus {
+        outline: none;
+        border-color: $water-500;
+        background: $surface;
+        box-shadow: 0 0 0 3px rgba(31, 120, 193, 0.15);
+    }
+}
+
+.drop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-7 $space-4;
+    font-size: 14px;
+    text-align: center;
+    color: $ink-soft;
+    background: $water-50;
+    border: 2px dashed $water-300;
+    border-radius: $radius-lg;
+}
+
+.fileInput {
+    display: none;
+}
+
+.browse {
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    color: $water-700;
+    background: $surface;
+    border-radius: $radius-pill;
+    box-shadow: $shadow-sm;
+    cursor: pointer;
+
+    &:hover {
+        color: $water-900;
+    }
+}
+
+.error {
+    font-size: 13px;
+    color: $danger;
+}
