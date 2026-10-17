@@ -6,7 +6,9 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
   turbopack: {
     rules: {
-      "*.css": {
+      // Only globals.css uses Tailwind; matching every *.css also caught the compiled
+      // Sass modules and stripped their class names
+      "globals.css": {
         loaders: ["@tailwindcss/turbopack"],
         as: "*.css",
       },
