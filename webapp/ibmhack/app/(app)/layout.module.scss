@@ -1,0 +1,161 @@
+@use "../../styles/variables" as *;
+
+.shell {
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  flex: 1;
+  min-height: 100vh;
+  background: $surface-alt;
+
+  @media (max-width: $bp-md) {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+  }
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+  height: 100vh;
+  padding: $space-5 $space-4;
+  background: $surface;
+  border-right: 1px solid $border;
+
+  @media (max-width: $bp-md) {
+    z-index: 10;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-3;
+    height: auto;
+    padding: $space-3 $space-4;
+    border-right: none;
+    border-bottom: 1px solid $border;
+  }
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 $space-2;
+  font-size: 17px;
+  font-weight: 600;
+  color: $ink;
+}
+
+.logoMark {
+  width: 22px;
+  height: 22px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  background: linear-gradient(135deg, $water-300, $water-700);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+
+  @media (max-width: $bp-md) {
+    order: 3;
+    flex-direction: row;
+    flex-basis: 100%;
+    overflow-x: auto;
+    margin: 0 (-$space-4);
+    padding: 0 $space-4;
+  }
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: 9px $space-3;
+  font-size: 14px;
+  font-weight: 500;
+  color: $ink-soft;
+  border-radius: $radius-md;
+  white-space: nowrap;
+  transition: background-color 0.15s, color 0.15s;
+
+  &:hover {
+    background: $surface-alt;
+    color: $ink;
+  }
+
+  &[aria-current="page"] {
+    background: $water-50;
+    color: $water-700;
+  }
+}
+
+.navIcon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  min-height: 40px;
+  padding: $space-2;
+
+  @media (max-width: $bp-md) {
+    margin-left: auto;
+    padding: 0;
+  }
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $water-500, $water-900);
+}
+
+.userText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+
+  @media (max-width: $bp-md) {
+    display: none;
+  }
+}
+
+.userName {
+  font-size: 14px;
+  font-weight: 600;
+  color: $ink;
+}
+
+.userNote {
+  font-size: 12px;
+  color: $muted;
+}
+
+.main {
+  width: 100%;
+  max-width: 1120px;
+  padding: $space-7 $space-6;
+
+  @media (max-width: $bp-md) {
+    padding: $space-5 $space-4;
+  }
+}
