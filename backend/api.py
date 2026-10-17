@@ -25,15 +25,18 @@ def convert_to_tokens(prompt: str):
     return encoding.encode(prompt)
 
 def calculate_consumption(input_tokens, label):
-    # Placeholder function to calculate water and energy consumption based on tokens and label
-    num_of_output_tokens = len(input_tokens)
-    if label == "medium":
-        num_of_output_tokens = num_of_output_tokens * 1.5
-    elif label == "hard":
-        num_of_output_tokens = num_of_output_tokens * 2
+    num_of_input_tokens = len(input_tokens)
+    num_of_output_tokens = num_of_input_tokens
 
-    energy_cost = len(input_tokens) * 0.2 + num_of_output_tokens * 1
-    water_cost = energy_cost * 2  # This needs more research to get a more accurate estimate, currently 1Wh = 1.1 - 6.7 ml/Wh.
+    if label == "medium":
+        num_of_output_tokens *= 1.5
+    elif label == "hard":
+        num_of_output_tokens *= 2
+
+    total_tokens = num_of_input_tokens + num_of_output_tokens
+
+    energy_cost = total_tokens * 0.000453  # Wh
+    water_cost = total_tokens * 0.000429   # mL
 
     return water_cost, energy_cost
 
