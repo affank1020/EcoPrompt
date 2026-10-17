@@ -25,8 +25,8 @@ test("cooler light mode and dark mode preserve a blue water identity", () => {
   assert.match(css, /background: #f3f7f9/);
   assert.match(shell, /background: #f3f7f9/);
   assert.match(css, /--ocean: #0878ae/);
-  assert.match(css, /\.savings-visual::before/);
-  assert.match(css, /#9bc5ad73/); // subdued sage landscape
+  assert.doesNotMatch(css, /\.savings-visual::before/); // no ground strip in either theme
+  assert.doesNotMatch(css, /#9bc5ad73|#376c59|#3f776e/);
   assert.match(css, /\.eco-app\[data-theme="dark"\]/);
   assert.match(css, /\.eco-app\[data-theme="dark"\] \.savings-visual/);
   assert.match(css, /\.eco-app\[data-theme="dark"\] \.rewrite-text/);
