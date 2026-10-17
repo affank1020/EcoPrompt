@@ -4,3 +4,11 @@ scipy
 scikit-learn
 joblib
 ipykernel
+
+datasets>=3.0,<5
+huggingface-hub>=0.26,<2
+pandas>=2.2,<3
+scipy>=1.12,<2
+matplotlib>=3.8,<4
+nbformat>=5.10,<6
+nbclient>=0.10,<1
