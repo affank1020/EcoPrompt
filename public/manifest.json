@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "My First Extension",
   "version": "0.1.0",
-  "description": "A simple starter Chrome extension.",
+  "description": "A simple React and TSX Chrome extension starter.",
   "action": {
     "default_popup": "popup.html"
   }

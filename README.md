@@ -1,15 +1,15 @@
 # My First Chrome Extension
 
-A tiny Chrome extension starter with a popup and a working button. No build step or dependencies are needed.
+A tiny React and TSX Chrome extension starter with a popup and a working button.
 
 ## Try it locally
 
-1. Open `chrome://extensions` in Chrome.
-2. Turn on **Developer mode**.
-3. Click **Load unpacked** and select this repository folder.
+1. Run `npm install` and `npm run build`.
+2. Open `chrome://extensions` in Chrome and turn on **Developer mode**.
+3. Click **Load unpacked** and select the `dist` folder.
 4. Click the extension icon in the toolbar to open the popup.
 
-After editing a file, click **Reload** on the extension card to see your changes.
+After editing a file, run `npm run build` again and click **Reload** on the extension card.
 
 ## Put it on GitHub
 
