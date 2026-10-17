@@ -25,7 +25,7 @@ async function SignupForm({
         Username{" "}
         <input
           name="username"
-          type="username"
+          type="text"
           required
           autoComplete="username"
         />
@@ -34,9 +34,9 @@ async function SignupForm({
         Display Name{" "}
         <input
           name="displayName"
-          type="displayName"
+          type="text"
           required
-          autoComplete="display-name"
+          autoComplete="nickname"
         />
       </label>
       <label className={styles.field}>
@@ -63,7 +63,7 @@ async function SignupForm({
   );
 }
 
-export default function SignupPage({ searchParams }: PageProps<"/login">) {
+export default function SignupPage({ searchParams }: PageProps<"/signup">) {
   return (
     <Suspense>
       <SignupForm searchParams={searchParams} />
