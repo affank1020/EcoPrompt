@@ -1,0 +1,199 @@
+@use "../../styles/variables" as *;
+
+// Same backdrop as the landing page hero, with the waves along the bottom.
+// The card sits above the waves, so it can overlap them on short screens.
+.page {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 1;
+  min-height: 100vh;
+  padding: $space-7 $space-4;
+  overflow: hidden;
+  background: radial-gradient(ellipse at top, #ffffff 0%, #f4f5f3 70%);
+}
+
+.card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;
+  padding: $space-6;
+  background: $surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+
+  @media (max-width: $bp-sm) {
+    padding: $space-5;
+  }
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: $space-5;
+  font-size: 16px;
+  font-weight: 600;
+  color: $ink;
+}
+
+.logoMark {
+  width: 22px;
+  height: 22px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  background: linear-gradient(135deg, $green-bright, $green);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.title {
+  font-family: $font-serif;
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.1;
+  color: $ink;
+}
+
+.subtitle {
+  margin-top: -$space-2;
+  font-size: 14px;
+  color: $muted;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: $ink;
+
+  input {
+    width: 100%;
+    padding: 10px $space-3;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 400;
+    color: $ink;
+    background: $surface-alt;
+    border: 1px solid $border;
+    border-radius: $radius-md;
+    transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+
+    &:focus {
+      outline: none;
+      border-color: $water-500;
+      background: $surface;
+      box-shadow: 0 0 0 3px rgba(31, 120, 193, 0.15);
+    }
+  }
+}
+
+.message,
+.error {
+  padding: $space-3;
+  font-size: 13px;
+  line-height: 1.5;
+  border-radius: $radius-md;
+}
+
+.message {
+  color: $water-900;
+  background: $water-50;
+}
+
+.error {
+  color: $danger;
+  background: #fdecea;
+}
+
+.submit {
+  width: 100%;
+  margin-top: $space-1;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+  background: $green;
+  border-radius: $radius-pill;
+  cursor: pointer;
+  transition: background-color 0.15s;
+
+  &:hover {
+    background: $green-hover;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $water-500;
+    outline-offset: 2px;
+  }
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  font-size: 12px;
+  color: $muted;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: $border;
+  }
+}
+
+.google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  width: 100%;
+  padding: 11px;
+  font-size: 15px;
+  font-weight: 500;
+  color: $ink;
+  background: $surface;
+  border: 1px solid $border-strong;
+  border-radius: $radius-pill;
+  cursor: pointer;
+  transition: background-color 0.15s;
+
+  &:hover {
+    background: $surface-alt;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $water-500;
+    outline-offset: 2px;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.footer {
+  margin-top: $space-1;
+  font-size: 14px;
+  text-align: center;
+  color: $ink-soft;
+
+  a {
+    font-weight: 600;
+    color: $water-700;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
