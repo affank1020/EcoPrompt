@@ -1,15 +1,21 @@
 {
   "manifest_version": 3,
-  "name": "EcoPrompt — AI impact assistant",
+  "name": "EcoPrompt \u2014 AI impact assistant",
   "short_name": "EcoPrompt",
   "version": "0.1.0",
   "description": "Preview mock AI energy and water estimates, compare model suitability and optimise prompts inside ChatGPT.",
   "permissions": [
-    "storage"
+    "storage",
+    "tabs",
+    "scripting",
+    "activeTab"
   ],
-  "host_permissions": [],
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*"
+  ],
   "action": {
-    "default_popup": "popup.html"
+    "default_title": "Open EcoPrompt"
   },
   "content_scripts": [
     {
@@ -22,5 +28,8 @@
       ],
       "run_at": "document_idle"
     }
-  ]
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
 }
