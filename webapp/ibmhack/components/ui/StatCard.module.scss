@@ -1,0 +1,38 @@
+@use "../../styles/variables" as *;
+
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+    padding: $space-5;
+    background: $surface;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+}
+
+.label {
+    font-size: 13px;
+    font-weight: 500;
+    color: $muted;
+}
+
+.value {
+    font-family: $font-serif;
+    font-size: 38px;
+    line-height: 1;
+    color: $ink;
+    font-variant-numeric: tabular-nums;
+}
+
+.sub {
+    font-size: 13px;
+    color: $ink-soft;
+}
+
+.good {
+    color: $green;
+}
+
+.warning {
+    color: $warning;
+}

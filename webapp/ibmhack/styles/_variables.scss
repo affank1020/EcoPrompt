@@ -1,0 +1,68 @@
+// Shared design tokens. Use in a module with:
+// @use "<relative path>/styles/variables" as *;
+// components/charts/palette.ts mirrors the chart colours for Recharts.
+
+// Text
+$ink: #0d1b2a;
+$ink-soft: #3d4f63;
+$muted: #6b7c8f;
+
+// Surfaces
+$surface: #ffffff;
+$surface-alt: #f3f7fa;
+$border: #dfe7ee;
+$border-strong: #c3d1dd;
+
+// Water
+$water-50: #eef6fc;
+$water-100: #d6eaf8;
+$water-300: #7fbbe6;
+$water-500: #1f78c1;
+$water-700: #0f4f8a;
+$water-900: #0a2f55;
+$deep: #0a3c78; // matches the bottom of the landing page waves
+$abyss: #051d36;
+
+// Brand
+$green: #074201;
+$green-hover: #0a5a02;
+$green-soft: #e4f2e1;
+$green-bright: #3fa34d;
+
+// Status
+$warning: #b45309;
+$warning-soft: #fdf1e2;
+$danger: #b42318;
+
+// Model sizes
+$size-small: #3fa34d;
+$size-medium: #1f78c1;
+$size-large: #0a2f55;
+
+// Spacing
+$space-1: 4px;
+$space-2: 8px;
+$space-3: 12px;
+$space-4: 16px;
+$space-5: 24px;
+$space-6: 32px;
+$space-7: 48px;
+$space-8: 64px;
+
+// Radii
+$radius-sm: 6px;
+$radius-md: 10px;
+$radius-lg: 16px;
+$radius-pill: 999px;
+
+// Shadows
+$shadow-sm: 0 1px 2px rgba(13, 27, 42, 0.06), 0 0 0 1px rgba(13, 27, 42, 0.04);
+$shadow-md: 0 6px 24px rgba(13, 27, 42, 0.08), 0 0 0 1px rgba(13, 27, 42, 0.04);
+
+// Type
+$font-serif: var(--font-serif), Georgia, serif;
+$font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+// Breakpoints
+$bp-sm: 600px;
+$bp-md: 860px;

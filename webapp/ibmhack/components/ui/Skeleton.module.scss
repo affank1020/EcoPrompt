@@ -1,0 +1,23 @@
+@use "../../styles/variables" as *;
+
+.skeleton {
+    width: 100%;
+    border-radius: $radius-lg;
+    background: linear-gradient(90deg, $surface 0%, $water-50 50%, $surface 100%);
+    background-size: 200% 100%;
+    box-shadow: $shadow-sm;
+    animation: shimmer 1.4s ease-in-out infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+        animation: none;
+    }
+}
+
+@keyframes shimmer {
+    from {
+        background-position: 100% 0;
+    }
+    to {
+        background-position: -100% 0;
+    }
+}
