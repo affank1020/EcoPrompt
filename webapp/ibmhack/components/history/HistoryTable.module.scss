@@ -1,0 +1,115 @@
+@use "../../styles/variables" as *;
+
+.wrap {
+    overflow-x: auto;
+    background: $surface;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+}
+
+.table {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: collapse;
+    font-size: 14px;
+    color: $ink;
+
+    th {
+        padding: $space-3 $space-4;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 600;
+        color: $muted;
+        border-bottom: 1px solid $border;
+        white-space: nowrap;
+    }
+
+    td {
+        padding: $space-3 $space-4;
+        border-bottom: 1px solid $border;
+        vertical-align: middle;
+    }
+
+    tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    tbody tr:hover td {
+        background: $surface-alt;
+    }
+}
+
+.sort {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+
+    &:hover {
+        color: $ink;
+    }
+}
+
+.arrow {
+    opacity: 0;
+    transition: opacity 0.15s;
+
+    .sort:hover & {
+        opacity: 0.4;
+    }
+}
+
+.arrowActive,
+.sort:hover .arrowActive {
+    opacity: 1;
+    color: $water-500;
+}
+
+.numeric {
+    text-align: right;
+
+    .sort {
+        flex-direction: row-reverse;
+    }
+}
+
+.subtle {
+    display: block;
+    font-size: 12px;
+    color: $muted;
+}
+
+.date {
+    white-space: nowrap;
+    color: $ink-soft;
+    font-variant-numeric: tabular-nums;
+}
+
+.water {
+    width: 220px;
+}
+
+.dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: $space-2;
+    border-radius: 50%;
+}
+
+.small {
+    background: $size-small;
+}
+
+.medium {
+    background: $size-medium;
+}
+
+.large {
+    background: $size-large;
+}
+
+.empty {
+    padding: $space-7 $space-4 !important;
+    text-align: center;
+    color: $muted;
+}

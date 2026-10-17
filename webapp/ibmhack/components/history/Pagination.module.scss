@@ -1,0 +1,58 @@
+@use "../../styles/variables" as *;
+
+.pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-3;
+    margin-top: $space-4;
+}
+
+.summary {
+    font-size: 13px;
+    color: $muted;
+    font-variant-numeric: tabular-nums;
+}
+
+.pages {
+    display: flex;
+    gap: $space-1;
+}
+
+.page {
+    display: grid;
+    place-items: center;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 $space-2;
+    font-size: 14px;
+    color: $ink-soft;
+    border-radius: $radius-md;
+    font-variant-numeric: tabular-nums;
+
+    &:hover {
+        background: $surface;
+        color: $ink;
+    }
+
+    &[aria-current="page"] {
+        background: $water-500;
+        color: white;
+    }
+}
+
+.disabled {
+    opacity: 0.35;
+
+    &:hover {
+        background: none;
+    }
+}
+
+.gap {
+    display: grid;
+    place-items: center;
+    min-width: 24px;
+    color: $muted;
+}
