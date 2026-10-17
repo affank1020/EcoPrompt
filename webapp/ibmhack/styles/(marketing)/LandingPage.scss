@@ -5,12 +5,16 @@
     width: 100%;
     flex: 1;
     background: radial-gradient(ellipse at top, #ffffff 0%, #f4f5f3 70%);
-    position: relative;
-    overflow: hidden;
 
-    // Keep page content above the animated waves
-    > :not(.waves) {
+    &__hero {
         position: relative;
-        z-index: 1;
+        width: 100%;
+        overflow: hidden;
+
+        // Keep the hero content above the animated waves
+        > :not(.waves) {
+            position: relative;
+            z-index: 1;
+        }
     }
 }

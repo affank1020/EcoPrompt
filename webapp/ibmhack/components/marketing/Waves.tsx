@@ -61,7 +61,7 @@ const LAYERS: Layer[] = [
             { wavelength: 160, amplitude: 3, speed: -1.8, phase: 5.1 },
         ],
         top: "rgba(30, 115, 185, 0.85)",
-        bottom: "rgba(10, 60, 120, 0.95)",
+        bottom: "rgb(10, 60, 120)", // opaque so it blends into the section below
         foam: 0.55,
     },
 ];
