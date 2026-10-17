@@ -1,21 +1,22 @@
-# My First Chrome Extension
+# IBM Hackathon 2026 — EcoPrompt
 
-A tiny React and TSX Chrome extension starter with a popup and a working button.
+Monorepo for the AI sustainability project.
 
-## Try it locally
+## Projects
 
-1. Run `npm install` and `npm run build`.
-2. Open `chrome://extensions` in Chrome and turn on **Developer mode**.
-3. Click **Load unpacked** and select the `dist` folder.
-4. Click the extension icon in the toolbar to open the popup.
+- [extension/](extension/) — Chrome extension integrating with ChatGPT (React + TypeScript, Redux Toolkit, mock analysis backend).
+- The team's web application can be added in a separate directory, for example `web/`.
 
-After editing a file, run `npm run build` again and click **Reload** on the extension card.
+## Run the extension
 
-## Put it on GitHub
-
-This folder is already a local Git repository with an initial commit. Create an empty repository on GitHub, then run:
-
-```sh
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
-git push -u origin main
+```bash
+cd extension
+npm install
+npm run build
 ```
+
+In Chrome, open `chrome://extensions`, enable Developer mode, then choose **Load unpacked** and select `extension/dist`.
+
+See [extension/README.md](extension/README.md) for extension details.
+
+The water/energy calculations currently use illustrative mock coefficients, not measured AI consumption.

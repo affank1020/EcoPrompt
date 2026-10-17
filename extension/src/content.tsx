@@ -1,0 +1,131 @@
+import { createRoot } from 'react-dom/client';
+import { Provider } from 'react-redux';
+import { store, requestAnalysis, setPrompt } from './store';
+import { Widget } from './widget';
+import widgetCss from './widget.css?inline';
+
+const HOST_ID = 'ecoprompt-extension-mount';
+const SELECTORS = [
+  '#prompt-textarea[contenteditable="true"]',
+  '[data-testid="prompt-textarea"][contenteditable="true"]',
+  'form [contenteditable="true"][role="textbox"]',
+  'form div[contenteditable="true"]',
+  'form textarea',
+];
+
+function findComposer(): HTMLElement | HTMLTextAreaElement | null {
+  for (const selector of SELECTORS) {
+    const candidate = document.querySelector<HTMLElement | HTMLTextAreaElement>(selector);
+    if (candidate && candidate.getBoundingClientRect().width > 0) return candidate;
+  }
+  return null;
+}
+
+function readComposer(element: HTMLElement | HTMLTextAreaElement | null): string {
+  if (!element) return '';
+  if (element instanceof HTMLTextAreaElement) return element.value;
+  return (element.innerText || element.textContent || '').trim();
+}
+
+function applyRewrite(text: string): boolean {
+  const editor = findComposer();
+  if (!editor) return false;
+  editor.focus();
+  if (editor instanceof HTMLTextAreaElement) {
+    const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')?.set;
+    setter?.call(editor, text);
+    editor.dispatchEvent(new Event('input', { bubbles: true }));
+  } else {
+    // Preserve editor input handling (e.g. ProseMirror) where possible.
+    const selection = document.getSelection();
+    if (!selection) return false;
+    const range = document.createRange();
+    range.selectNodeContents(editor);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    const inserted = document.execCommand('insertText', false, text);
+    if (!inserted) {
+      // Best-effort fallback if the host editor does not support insertText.
+      editor.textContent = text;
+      editor.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: text }));
+    }
+  }
+  store.dispatch(setPrompt(readComposer(editor)));
+  return readComposer(editor).trim() === text.trim();
+}
+
+function boot() {
+  if (document.getElementById(HOST_ID)) return;
+  const host = document.createElement('div');
+  host.id = HOST_ID;
+  host.style.cssText = 'all:initial; position:fixed; right:20px; bottom:145px; z-index:2147483000; pointer-events:none;';
+  const shadow = host.attachShadow({ mode: 'open' });
+  const style = document.createElement('style');
+  style.textContent = widgetCss;
+  const mount = document.createElement('div');
+  shadow.append(style, mount);
+  document.body.appendChild(host);
+  createRoot(mount).render(<Provider store={store}><Widget onApply={applyRewrite} /></Provider>);
+
+  let lastPrompt = '';
+  let debounce: ReturnType<typeof setTimeout> | undefined;
+  let scheduled = false;
+
+  function refresh() {
+    const composer = findComposer();
+    const prompt = readComposer(composer);
+    if (composer) {
+      const rect = composer.getBoundingClientRect();
+      // Sit above the actual composer rather than at a fixed page coordinate.
+      const bottom = Math.min(window.innerHeight - 24, Math.max(98, window.innerHeight - rect.top + 14));
+      const right = Math.max(14, Math.min(96, window.innerWidth - rect.right));
+      host.style.bottom = bottom + 'px';
+      host.style.right = right + 'px';
+      host.style.display = 'block';
+    } else {
+      host.style.display = 'none';
+    }
+    if (prompt === lastPrompt) return;
+    lastPrompt = prompt;
+    store.dispatch(setPrompt(prompt));
+    if (debounce) clearTimeout(debounce);
+    if (prompt.trim()) {
+      debounce = setTimeout(() => {
+        if (store.getState().eco.enabled) void store.dispatch(requestAnalysis(prompt));
+      }, 720);
+    }
+  }
+
+  function scheduleRefresh() {
+    if (scheduled) return;
+    scheduled = true;
+    window.setTimeout(() => { scheduled = false; refresh(); }, 90);
+  }
+
+  document.addEventListener('input', scheduleRefresh, true);
+  document.addEventListener('keyup', scheduleRefresh, true);
+  window.addEventListener('resize', scheduleRefresh);
+  window.addEventListener('scroll', scheduleRefresh, true);
+  // ChatGPT is a SPA and may replace the composer after navigating chats.
+  const observer = new MutationObserver(scheduleRefresh);
+  observer.observe(document.body, { childList: true, subtree: true });
+  // Low-frequency fallback for programmatic editor changes.
+  window.setInterval(refresh, 1400);
+  refresh();
+
+  let savedPrompt = '';
+  store.subscribe(() => {
+    const { analysis, status } = store.getState().eco;
+    if (status !== 'ready' || !analysis || savedPrompt === analysis.prompt) return;
+    savedPrompt = analysis.prompt;
+    if (typeof chrome !== 'undefined' && chrome.storage?.local) {
+      void chrome.storage.local.set({ ecoLatest: { ...analysis, analyzedAt: Date.now() } });
+    }
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', boot, { once: true });
+} else {
+  boot();
+}
