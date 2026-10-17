@@ -14,7 +14,8 @@ function boot() {
   if (document.getElementById(HOST_ID)) return;
   const host = document.createElement("div");
   host.id = HOST_ID;
-  host.style.cssText = "all:initial;position:fixed;top:0;right:0;z-index:2147483000;display:none;";
+  // Remain above the page background, but below ChatGPT's menus and overlays.
+  host.style.cssText = "all:initial;position:fixed;top:0;right:0;z-index:1;display:none;";
   const shadow = host.attachShadow({ mode: "open" });
   shadow.innerHTML = `<style>:host{color-scheme:light}button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:30px;border:1px solid #aadbef;border-radius:999px;padding:5px 11px;background:#eaf8ff;color:#0878ae;font:600 12px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;white-space:nowrap;box-shadow:0 2px 8px #074c6814;cursor:pointer}button:hover:not(:disabled){background:#d6f0ff;border-color:#7ec6e6}button:disabled{opacity:.52;cursor:default}button:focus-visible{outline:2px solid #25a2dc;outline-offset:2px}svg{width:16px;height:16px;flex-shrink:0}:host([data-theme="dark"]){color-scheme:dark}:host([data-theme="dark"]) button{background:#193a4e;border-color:#376d85;color:#a5e5ff;box-shadow:0 2px 10px #07172366}:host([data-theme="dark"]) button:hover:not(:disabled){background:#254e66;border-color:#4b8ca9}</style>
 <button type="button" title="Analyse water and energy estimates and improve your draft" aria-label="Analyse and improve this prompt with EcoPrompt">
