@@ -1,12 +1,18 @@
+from typing import Literal
+
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import tiktoken
 from tiktoken import Encoding
 
 from joint_classifier import classify
+from compressor import Compressor
 
 # Warm up at startup so model loading and CUDA init don't slow the first request.
 classify("warm up")
+
+compressor = Compressor()
+compressor.warm_up()
 
 app = FastAPI()
 
@@ -15,6 +21,9 @@ class PromptRequest(BaseModel):
     prompt: str
     epsilon: float = 0.5
 
+class CompressRequest(BaseModel):
+    prompt: str = Field(min_length=1, max_length=20000)
+    preset: Literal["light", "balanced", "aggressive"] = "balanced"
 
 class ConsumptionRequest(BaseModel):
     prompt: str
@@ -64,3 +73,11 @@ def analyse_prompt(req: PromptRequest):
 
 
     return {"prompt": req.prompt, "label": label, "probabilities": probabilities, "water_cost": water_cost, "energy_cost": energy_cost}
+
+@app.post("/compress")
+def compress_prompt(req: CompressRequest):
+    result = compressor.compress(req.prompt, req.preset)
+    # Never log prompt text: counts and timing only.
+    print(f"Compression ({result['preset']}, {result['reason']}) took {result['latency_ms']} ms, "
+        f"tokens {result['tokens_before']} -> {result['tokens_after']}.")
+    return result
