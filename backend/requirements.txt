@@ -7,6 +7,9 @@ torch
 transformers
 peft
 ipykernel
+fastapi
+uvicorn
+tiktoken
 
 datasets>=3.0,<5
 huggingface-hub>=0.26,<3
