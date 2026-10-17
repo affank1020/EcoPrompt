@@ -1,18 +1,42 @@
-import { NextResponse } from "next/server";
+  import { createServerClient } from "@supabase/ssr";
+  import { NextResponse, type NextRequest } from "next/server";
 
-// TODO(auth): set to true once Supabase Auth is set up
-const REQUIRE_AUTH = false;
+  // Everything in the (app) route group
+  const PROTECTED = ["/dashboard", "/bulk", "/compare", "/leaderboard"];
 
-export function proxy() {
-  if (!REQUIRE_AUTH) return NextResponse.next();
+  export async function proxy(request: NextRequest) {
+    let response = NextResponse.next({ request });
 
-  // TODO(auth): take the request as a parameter (request: NextRequest), check the Supabase session
-  // cookie and redirect to /login when there isn't one, e.g.
-  // return NextResponse.redirect(new URL(`/login?next=${request.nextUrl.pathname}`, request.url));
-  return NextResponse.next();
-}
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+      {
+        cookies: {
+          getAll: () => request.cookies.getAll(),
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+            response = NextResponse.next({ request });
+            cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name,
+  value, options));
+          },
+        },
+      },
+    );
 
-// Everything in the (app) route group
-export const config = {
-  matcher: ["/dashboard/:path*", "/bulk/:path*", "/compare/:path*", "/leaderboard/:path*"],
-};
+    // Also refreshes an expired session, so keep this call even on public routes
+    const { data } = await supabase.auth.getClaims();
+
+    const path = request.nextUrl.pathname;
+    const isProtected = PROTECTED.some((p) => path === p || path.startsWith(`${p}/`));
+    if (!data?.claims && isProtected) {
+      return NextResponse.redirect(new URL(`/login?next=${encodeURIComponent(path)}`,
+  request.url));
+    }
+    return response;
+  }
+
+  // Run on everything except static assets, so the session cookie stays fresh
+  export const config = {
+    matcher:
+  ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  };
