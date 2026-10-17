@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import UsageChart from "../../../components/charts/UsageChart";
+import PromptChecker from "../../../components/checker/PromptChecker";
 import { formatMl, formatNumber, formatRange } from "../../../components/ui/format";
 import PageHeader from "../../../components/ui/PageHeader";
 import Skeleton from "../../../components/ui/Skeleton";
@@ -54,6 +55,11 @@ export default function DashboardPage() {
         description="Estimated water used by the prompts you've sent, based on the estimates the extension records."
         actions={<Link href="/dashboard/history" className={styles.link}>View history →</Link>}
       />
+      <section className={styles.checker}>
+        <h2 className={styles.sectionTitle}>Check a prompt</h2>
+        <PromptChecker variant="card" />
+      </section>
+      <h2 className={styles.sectionTitle}>Your usage</h2>
       <Suspense fallback={<div className={styles.stats}>{[0, 1, 2, 3].map((i) => <Skeleton key={i} height={128} />)}</div>}>
         <Stats />
       </Suspense>

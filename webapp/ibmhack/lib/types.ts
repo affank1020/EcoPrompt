@@ -16,6 +16,12 @@ export type EstimateResult = {
     highMl: number;
 };
 
+export type CompressionResult = {
+    compressed: string;
+    original: EstimateResult;
+    optimised: EstimateResult;
+};
+
 // A stored estimate, as it will come back from Supabase
 export type Estimate = EstimateResult & {
     id: string;

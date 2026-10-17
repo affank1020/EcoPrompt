@@ -32,6 +32,12 @@ async function mapWithLimit<T, R>(items: T[], limit: number, fn: (item: T) => Pr
     return results;
 }
 
+export async function checkPrompt(prompt: string, model: string): Promise<EstimateResult> {
+    validatePrompt(prompt);
+    validateModel(model);
+    return estimate(prompt, model);
+}
+
 // One prompt against several models
 export async function compareModels(prompt: string, models: string[]): Promise<EstimateResult[]> {
     validatePrompt(prompt);

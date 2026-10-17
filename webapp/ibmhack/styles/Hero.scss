@@ -24,39 +24,6 @@
         margin-bottom: 32px;
     }
 
-    &__input {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        max-width: 480px;
-        padding: 6px 6px 6px 22px;
-        background: white;
-        border-radius: 999px;
-        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05);
-
-        &__textbox {
-            flex: 1;
-            min-width: 0;
-            font-size: 15px;
-            border: none;
-            outline: none;
-            background: transparent;
-
-            &::placeholder {
-                color: #8a8a8a;
-            }
-        }
-
-        &__submit {
-            padding: 11px 22px;
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 999px;
-            white-space: nowrap;
-            cursor: pointer;
-        }
-    }
-
     &__input-sub {
         margin-top: 12px;
         font-size: 13px;
