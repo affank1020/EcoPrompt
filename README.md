@@ -13,12 +13,9 @@ After editing a file, click **Reload** on the extension card to see your changes
 
 ## Put it on GitHub
 
-Create an empty repository on GitHub, then run:
+This folder is already a local Git repository with an initial commit. Create an empty repository on GitHub, then run:
 
 ```sh
-git add .
-git commit -m "Add Chrome extension starter"
-git branch -M main
 git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
 git push -u origin main
 ```
