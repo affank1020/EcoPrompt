@@ -1,17 +1,21 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
 
-// Build the content script as one classic JS file for Chrome MV3.
-// The popup build runs first, so its dist/ and manifest are preserved.
+const extensionRoot = dirname(fileURLToPath(import.meta.url));
+
+// Build the classic MV3 content script into the same directory as the popup.
+// Keep the popup, manifest, and public assets from the first build pass.
 export default defineConfig({
+  root: extensionRoot,
   plugins: [react()],
   publicDir: false,
   build: {
-    outDir: 'dist',
+    outDir: resolve(extensionRoot, 'dist'),
     emptyOutDir: false,
     lib: {
-      entry: resolve(__dirname, 'src/content.tsx'),
+      entry: resolve(extensionRoot, 'src/content.tsx'),
       name: 'EcoPromptContent',
       formats: ['iife'],
       fileName: () => 'content.js',
