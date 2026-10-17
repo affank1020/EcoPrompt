@@ -1,0 +1,91 @@
+@use "../../styles/variables" as *;
+
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+    padding: $space-5;
+    background: $surface;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+
+    --fill: #{$water-500};
+    --status-bg: #{$water-50};
+    --status-fg: #{$water-700};
+}
+
+.done {
+    --fill: #{$green-bright};
+    --status-bg: #{$green-soft};
+    --status-fg: #{$green};
+}
+
+.close {
+    --fill: #{$warning};
+    --status-bg: #{$warning-soft};
+    --status-fg: #{$warning};
+}
+
+.over {
+    --fill: #{$danger};
+    --status-bg: #{$warning-soft};
+    --status-fg: #{$danger};
+}
+
+.header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: $space-3;
+}
+
+.title {
+    font-size: 16px;
+    font-weight: 600;
+    color: $ink;
+}
+
+.status {
+    padding: 2px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--status-fg);
+    background: var(--status-bg);
+    border-radius: $radius-pill;
+}
+
+.description {
+    font-size: 14px;
+    line-height: 1.5;
+    color: $ink-soft;
+}
+
+.track {
+    height: 10px;
+    margin-top: auto;
+    overflow: hidden;
+    border-radius: $radius-pill;
+    background: $surface-alt;
+}
+
+.fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--fill);
+    transition: width 0.4s ease;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    gap: $space-3;
+    font-size: 13px;
+    color: $muted;
+
+    strong {
+        color: $ink;
+        font-variant-numeric: tabular-nums;
+    }
+}

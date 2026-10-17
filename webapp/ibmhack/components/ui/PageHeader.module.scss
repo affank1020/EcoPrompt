@@ -1,0 +1,31 @@
+@use "../../styles/variables" as *;
+
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: $space-4;
+    margin-bottom: $space-6;
+}
+
+.title {
+    font-family: $font-serif;
+    font-size: clamp(32px, 4vw, 44px);
+    font-weight: 400;
+    line-height: 1.1;
+    color: $ink;
+}
+
+.description {
+    max-width: 620px;
+    margin-top: $space-2;
+    font-size: 15px;
+    line-height: 1.6;
+    color: $ink-soft;
+}
+
+.actions {
+    display: flex;
+    gap: $space-2;
+}

@@ -1,0 +1,130 @@
+@use "../../styles/variables" as *;
+
+.wrap {
+    overflow-x: auto;
+    background: $surface;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+}
+
+.table {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: collapse;
+    font-size: 14px;
+    color: $ink;
+
+    th,
+    td {
+        padding: $space-3 $space-4;
+        text-align: left;
+        vertical-align: middle;
+        border-bottom: 1px solid $border;
+    }
+
+    thead th {
+        font-size: 12px;
+        font-weight: 600;
+        color: $muted;
+    }
+
+    tbody:last-child tr:last-child td {
+        border-bottom: none;
+    }
+}
+
+.rank {
+    width: 64px;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center !important;
+    font-variant-numeric: tabular-nums;
+}
+
+.user {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-3;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.avatar {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+    font-weight: 600;
+    color: $water-700;
+    border-radius: 50%;
+    background: $water-50;
+}
+
+.badge {
+    padding: 1px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: white;
+    background: $water-500;
+    border-radius: $radius-pill;
+}
+
+.you td {
+    background: $water-50;
+
+    .avatar {
+        color: white;
+        background: linear-gradient(135deg, $water-500, $water-900);
+    }
+}
+
+.you td:first-child {
+    box-shadow: inset 3px 0 0 $water-500;
+}
+
+.numeric {
+    text-align: right !important;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.avg {
+    width: 240px;
+}
+
+.avgValue {
+    display: inline-block;
+    min-width: 64px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.meter {
+    display: inline-block;
+    width: 120px;
+    height: 6px;
+    margin-left: $space-3;
+    vertical-align: middle;
+    border-radius: $radius-pill;
+    background: $surface-alt;
+
+    > span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, $green-bright, $water-500);
+    }
+}
+
+.divider {
+    padding-top: $space-5 !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    color: $muted;
+    background: $surface-alt;
+}
+
+.unranked td {
+    color: $muted;
+}

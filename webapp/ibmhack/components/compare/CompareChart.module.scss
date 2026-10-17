@@ -1,0 +1,35 @@
+@use "../../styles/variables" as *;
+
+.figure {
+    padding: $space-5;
+    background: $surface;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+}
+
+.caption {
+    margin-bottom: $space-4;
+    font-size: 13px;
+    color: $muted;
+}
+
+.chart {
+    width: 100%;
+}
+
+.tooltip {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: $space-2 $space-3;
+    font-size: 13px;
+    color: $ink;
+    background: $surface;
+    border-radius: $radius-md;
+    box-shadow: $shadow-md;
+}
+
+.tooltipRange {
+    font-size: 12px;
+    color: $muted;
+}

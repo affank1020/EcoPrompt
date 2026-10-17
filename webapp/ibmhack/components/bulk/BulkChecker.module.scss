@@ -1,0 +1,66 @@
+@use "../../styles/variables" as *;
+
+.checker {
+    display: flex;
+    flex-direction: column;
+    gap: $space-5;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: $space-5;
+    padding: $space-5;
+    background: $surface;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-4;
+    padding-top: $space-4;
+    border-top: 1px solid $border;
+}
+
+.submit {
+    padding: 11px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    background: $green;
+    border-radius: $radius-pill;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+        background: $green-hover;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.hint {
+    font-size: 13px;
+    color: $muted;
+}
+
+.warning {
+    font-size: 13px;
+    color: $warning;
+}
+
+.error {
+    flex-basis: 100%;
+    font-size: 13px;
+    color: $danger;
+}
+
+.stale {
+    opacity: 0.55;
+    transition: opacity 0.2s;
+}

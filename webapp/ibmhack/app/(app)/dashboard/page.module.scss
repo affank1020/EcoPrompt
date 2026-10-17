@@ -1,0 +1,33 @@
+@use "../../../styles/variables" as *;
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $space-4;
+  margin-bottom: $space-5;
+}
+
+.link {
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  color: $water-700;
+  background: $surface;
+  border-radius: $radius-pill;
+  box-shadow: $shadow-sm;
+
+  &:hover {
+    color: $water-900;
+  }
+}
+
+.checker {
+  margin-bottom: $space-6;
+}
+
+.sectionTitle {
+  margin-bottom: $space-3;
+  font-size: 18px;
+  font-weight: 600;
+  color: $ink;
+}

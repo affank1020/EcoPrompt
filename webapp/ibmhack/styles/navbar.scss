@@ -1,0 +1,94 @@
+$green: #074201;
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 56px;
+    width: 100%;
+    color: #111;
+
+    &__logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        &__mark {
+            width: 28px;
+            height: 28px;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            background: linear-gradient(135deg, #3fa34d, $green);
+        }
+
+        &__text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+
+        &__name {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        &__tagline {
+            font-size: 11px;
+            color: #6b6b6b;
+        }
+    }
+
+    &__links {
+        display: flex;
+        gap: 40px;
+
+        &__link {
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.15s;
+
+            &:hover {
+                color: $green;
+            }
+        }
+    }
+
+    &__buttons {
+        display: flex;
+        gap: 10px;
+
+        &__button {
+            padding: 8px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid #111;
+            border-radius: 999px;
+            background: white;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: background-color 0.15s;
+
+            &:hover {
+                background: #f2f2f2;
+            }
+        }
+    }
+
+    @media (max-width: 860px) {
+        padding: 16px 20px;
+
+        &__links {
+            display: none;
+        }
+    }
+}
+
+.green-button {
+    background-color: $green;
+    border-color: $green;
+    color: white;
+
+    &:hover {
+        background-color: #0a5a02;
+    }
+}

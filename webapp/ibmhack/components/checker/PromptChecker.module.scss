@@ -1,0 +1,218 @@
+@use "../../styles/variables" as *;
+
+.checker {
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+    width: 100%;
+    text-align: left;
+}
+
+// Landing page: pill input centred under the headline
+.hero {
+    max-width: 560px;
+    margin: 0 auto;
+
+    .form {
+        flex-direction: row;
+        align-items: center;
+        max-width: 480px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 6px 6px 6px 22px;
+        background: $surface;
+        border-radius: $radius-pill;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    }
+
+    .result {
+        box-shadow: $shadow-md;
+    }
+}
+
+// Dashboard: full-width card with a textarea
+.card {
+    padding: $space-5;
+    background: $surface;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+
+    .form {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .result {
+        padding: $space-5 0 0;
+        border-top: 1px solid $border;
+        border-radius: 0;
+        box-shadow: none;
+    }
+}
+
+.form {
+    display: flex;
+    gap: $space-3;
+}
+
+.input {
+    flex: 1;
+    min-width: 0;
+    font-size: 15px;
+    border: none;
+    outline: none;
+    background: transparent;
+
+    &::placeholder {
+        color: #8a8a8a;
+    }
+}
+
+.textarea {
+    width: 100%;
+    padding: $space-3 $space-4;
+    font: inherit;
+    font-size: 15px;
+    line-height: 1.5;
+    color: $ink;
+    background: $surface-alt;
+    border: 1px solid $border;
+    border-radius: $radius-md;
+    resize: vertical;
+
+    &:focus {
+        outline: none;
+        border-color: $water-500;
+        background: $surface;
+        box-shadow: 0 0 0 3px rgba(31, 120, 193, 0.15);
+    }
+}
+
+.submit {
+    padding: 11px 22px;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    white-space: nowrap;
+    background: $green;
+    border-radius: $radius-pill;
+    cursor: pointer;
+    transition: background-color 0.15s;
+
+    &:hover:not(:disabled) {
+        background: $green-hover;
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+.error {
+    font-size: 13px;
+    color: $danger;
+    text-align: center;
+}
+
+.result {
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+    padding: $space-5;
+    background: $surface;
+    border-radius: $radius-lg;
+    transition: opacity 0.2s;
+}
+
+.stale {
+    opacity: 0.55;
+}
+
+.resultHeader {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-2;
+}
+
+.modelField {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-2;
+    font-size: 13px;
+    color: $muted;
+}
+
+.select {
+    padding: 4px 28px 4px 10px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: $ink;
+    background: $water-50 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%230f4f8a' stroke-width='1.8'%3E%3Cpath d='M3 4.5l3 3 3-3'/%3E%3C/svg%3E") no-repeat right 8px center;
+    border: none;
+    border-radius: $radius-pill;
+    appearance: none;
+    cursor: pointer;
+
+    &:focus-visible {
+        outline: 2px solid $water-500;
+        outline-offset: 1px;
+    }
+}
+
+.tokens {
+    font-size: 13px;
+    color: $muted;
+}
+
+.compressRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-3;
+    padding-top: $space-4;
+    border-top: 1px solid $border;
+}
+
+.compress {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+    padding: 9px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    color: $water-700;
+    background: $water-50;
+    border-radius: $radius-pill;
+    box-shadow: inset 0 0 0 1px $water-100;
+    cursor: pointer;
+    transition: background-color 0.15s;
+
+    svg {
+        width: 16px;
+        height: 16px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    &:hover:not(:disabled) {
+        background: $water-100;
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+.compressHint {
+    font-size: 13px;
+    color: $muted;
+}

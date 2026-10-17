@@ -1,0 +1,106 @@
+@use "../../styles/variables" as *;
+
+.results {
+    background: $surface;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+}
+
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: $space-3;
+    padding: $space-5;
+    border-bottom: 1px solid $border;
+}
+
+.title {
+    font-size: 17px;
+    font-weight: 600;
+    color: $ink;
+}
+
+.total {
+    margin-top: $space-1;
+    font-size: 14px;
+    color: $muted;
+}
+
+.totalValue {
+    font-family: $font-serif;
+    font-size: 28px;
+    color: $water-700;
+}
+
+.download {
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    color: $water-700;
+    border: 1px solid $border-strong;
+    border-radius: $radius-pill;
+    cursor: pointer;
+
+    &:hover {
+        background: $water-50;
+    }
+}
+
+.wrap {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    min-width: 680px;
+    border-collapse: collapse;
+    font-size: 14px;
+    color: $ink;
+
+    th,
+    td {
+        padding: $space-3 $space-4;
+        text-align: left;
+        vertical-align: middle;
+        border-bottom: 1px solid $border;
+    }
+
+    thead th {
+        font-size: 12px;
+        font-weight: 600;
+        color: $muted;
+    }
+
+    tfoot th,
+    tfoot td {
+        font-weight: 600;
+        background: $surface-alt;
+        border-bottom: none;
+    }
+}
+
+.index {
+    width: 40px;
+    color: $muted;
+}
+
+.prompt {
+    display: -webkit-box;
+    max-width: 420px;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.45;
+}
+
+.numeric {
+    text-align: right !important;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.water {
+    width: 220px;
+}

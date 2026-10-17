@@ -1,0 +1,39 @@
+@use "../../../styles/variables" as *;
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  align-items: start;
+  gap: $space-6;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.section {
+  min-width: 0;
+}
+
+.sectionHeader {
+  margin-bottom: $space-4;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: $ink;
+}
+
+.sectionNote {
+  margin-top: $space-1;
+  font-size: 13px;
+  line-height: 1.5;
+  color: $muted;
+}
+
+.challenges {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: $space-4;
+}
