@@ -4,7 +4,7 @@
     align-items: center;
     text-align: center;
     color: #111;
-    padding: 110px 20px 80px;
+    padding: 110px 20px clamp(160px, 34vh, 340px);
 
     &__main {
         max-width: 760px;

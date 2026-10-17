@@ -1,0 +1,15 @@
+.waves {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: clamp(140px, 32vh, 320px);
+    pointer-events: none;
+    z-index: 0;
+
+    &__canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+}
