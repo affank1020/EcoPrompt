@@ -1,4 +1,9 @@
 import json
+import os
+from pathlib import Path
+
+os.environ.setdefault("HF_HOME", str(Path(__file__).resolve().parent / ".runtime" / "huggingface"))
+
 import torch
 from huggingface_hub import hf_hub_download
 from peft import PeftModel

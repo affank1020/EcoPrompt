@@ -3,10 +3,13 @@ pandas
 scipy
 scikit-learn
 joblib
+torch
+transformers
+peft
 ipykernel
 
 datasets>=3.0,<5
-huggingface-hub>=0.26,<2
+huggingface-hub>=0.26,<3
 pandas>=2.2,<3
 scipy>=1.12,<2
 matplotlib>=3.8,<4
