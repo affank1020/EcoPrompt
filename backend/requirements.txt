@@ -10,6 +10,7 @@ ipykernel
 fastapi
 uvicorn
 tiktoken
+llmlingua==0.2.2
 
 datasets>=3.0,<5
 huggingface-hub>=0.26,<3
