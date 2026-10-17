@@ -108,22 +108,31 @@
   display: flex;
   align-items: center;
   gap: $space-3;
-  min-height: 40px;
-  padding: $space-2;
+  min-height: 56px;
+  padding: $space-3;
+  border-radius: $radius-md;
+  background: $surface-alt;
+  box-shadow: inset 0 0 0 1px $border;
 
   @media (max-width: $bp-md) {
+    min-height: 0;
     margin-left: auto;
     padding: 0;
+    gap: $space-2;
+    background: none;
+    box-shadow: none;
   }
 }
 
 .avatar {
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
-  font-size: 14px;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  font-size: 15px;
   font-weight: 600;
+  line-height: 1;
   color: white;
   border-radius: 50%;
   background: linear-gradient(135deg, $water-500, $water-900);
@@ -131,7 +140,10 @@
 
 .userText {
   display: flex;
+  flex: 1;
   flex-direction: column;
+  gap: 2px;
+  min-width: 0;
   line-height: 1.2;
 
   @media (max-width: $bp-md) {
@@ -140,14 +152,67 @@
 }
 
 .userName {
+  overflow: hidden;
   font-size: 14px;
   font-weight: 600;
   color: $ink;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .userNote {
+  overflow: hidden;
   font-size: 12px;
   color: $muted;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.signOut {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  color: $muted;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  &:hover {
+    color: $danger;
+    background: $surface;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $water-500;
+    outline-offset: 1px;
+  }
+}
+
+.userAction {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  background: $green;
+  border-radius: $radius-pill;
+  transition: background-color 0.15s;
+
+  &:hover {
+    background: $green-hover;
+  }
 }
 
 .main {

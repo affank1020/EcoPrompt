@@ -19,10 +19,9 @@ export default function Navbar() {
                 <a href="#faq" className="navbar__links__link">FAQ</a>
                 <Link href="/dashboard" className="navbar__links__link">Dashboard</Link>
             </div>
-            {/* TODO(auth): link these to the Supabase login and sign-up pages */}
             <div className="navbar__buttons">
-                <button type="button" className="navbar__buttons__button">Login</button>
-                <button type="button" className="navbar__buttons__button green-button">Sign Up</button>
+                <Link href="/login" className="navbar__buttons__button">Login</Link>
+                <Link href="/signup" className="navbar__buttons__button green-button">Sign Up</Link>
             </div>
         </nav>
     )

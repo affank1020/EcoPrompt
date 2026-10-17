@@ -2,7 +2,7 @@
   import { NextResponse, type NextRequest } from "next/server";
 
   // Everything in the (app) route group
-  const PROTECTED = ["/dashboard", "/bulk", "/compare", "/leaderboard"];
+  const PROTECTED = ["/dashboard", "/bulk", "/compare", "/leaderboard", "/welcome"];
 
   export async function proxy(request: NextRequest) {
     let response = NextResponse.next({ request });
