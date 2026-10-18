@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { estimatePrompts } from "../../lib/estimation/actions";
 import { DEFAULT_MODEL_ID, MODELS } from "../../lib/estimation/models";
-import type { EstimateResult } from "../../lib/types";
+import type { EstimateResult, HistorySaveStatus } from "../../lib/types";
 import ModelSelect from "../compare/ModelSelect";
 import BulkInput, { INITIAL_BULK_INPUT, promptsFromInput, type BulkInputState } from "./BulkInput";
 import BulkResults from "./BulkResults";
@@ -16,6 +16,7 @@ export default function BulkChecker() {
     const [input, setInput] = useState<BulkInputState>(INITIAL_BULK_INPUT);
     const [modelId, setModelId] = useState(DEFAULT_MODEL_ID);
     const [checked, setChecked] = useState<{ prompts: string[]; results: EstimateResult[]; modelId: string } | null>(null);
+    const [history, setHistory] = useState<HistorySaveStatus | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [pending, startTransition] = useTransition();
 
@@ -27,7 +28,8 @@ export default function BulkChecker() {
         setError(null);
         startTransition(async () => {
             try {
-                const results = await estimatePrompts(prompts, modelId);
+                const { results, history } = await estimatePrompts(prompts, modelId);
+                setHistory(history);
                 setChecked({ prompts, results, modelId });
             } catch (err) {
                 setError(err instanceof Error ? err.message : "Something went wrong. Try again.");
@@ -60,6 +62,7 @@ export default function BulkChecker() {
             </div>
             {checked && checkedModel ? (
                 <div className={pending ? styles.stale : undefined}>
+                    {history && <p role="status">{history === "saved" ? "Saved to history under its own methodology; excluded from extension totals." : history === "signed-out" ? "Sign in to save checks to history." : "Results ready, but history could not be saved. History may be unavailable or unconfigured."}</p>}
                     <BulkResults prompts={checked.prompts} results={checked.results} model={checkedModel} />
                 </div>
             ) : null}

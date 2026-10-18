@@ -7,8 +7,12 @@ export type Model = {
     size: ModelSize;
 };
 
+export type Complexity = "easy" | "medium" | "hard";
+export type HistorySaveStatus = "saved" | "signed-out" | "failed";
+
 // What the estimation API returns for one prompt
 export type EstimateResult = {
+    complexity?: Complexity;
     energyWh?: number | null;
     methodology?: string;
     model: string;
@@ -18,7 +22,22 @@ export type EstimateResult = {
     highMl: number;
 };
 
+export type CompressionPreset = "light" | "balanced" | "aggressive";
+export type CompressionDetails = {
+    mode: "backend" | "local-mock";
+    preset: CompressionPreset;
+    reason: "ok" | "too_short" | "no_savings" | "verification_failed" | "local_mock";
+    fallback: boolean;
+    tokensBefore: number | null;
+    tokensAfter: number | null;
+    tokensSaved: number | null;
+    negationsLost: string[];
+    numbersLost: string[];
+    latencyMs: number | null;
+};
+
 export type CompressionResult = {
+    details: CompressionDetails;
     compressed: string;
     original: EstimateResult;
     optimised: EstimateResult;
