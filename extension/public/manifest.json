@@ -3,9 +3,12 @@
   "name": "EcoPrompt — AI impact assistant",
   "short_name": "EcoPrompt",
   "version": "0.1.0",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvigy+APmold2iEiJFd/pqf185VwIvPoc2hBFOZZa3EYA7IZCBQ7OrCuBVi1R7Ecc5lyb+m7vE4qw/jCvxir3lIqmM+HRorUblGxqe1QrMYtVibTao7DnfJmvAG6P73rT4NU1F06ydPop1C2WcH8e+C5jmWfsGgHFYm6eENf2JzRwXMtN+pIbztP3xvyJhxeTqwOpVGdz/LvQPVdSa/1aDztCUpFz07v0klDgYc+h16h0+as6kSweADEJZVBLO93xEuGV/4fvyHwFDloxjtHZC8kvAxoq5qcaTQsnTVrOE/+AKneEbfnkW90MQP8fsGJgz+xyttXAGAmAq0hU570ZUQIDAQAB",
   "description": "Preview mock AI energy and water estimates, compare model suitability and optimise prompts inside ChatGPT.",
   "permissions": [
-    "storage"
+    "storage",
+    "identity",
+    "alarms"
   ],
   "host_permissions": [],
   "action": {
@@ -22,5 +25,8 @@
       ],
       "run_at": "document_idle"
     }
-  ]
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
 }

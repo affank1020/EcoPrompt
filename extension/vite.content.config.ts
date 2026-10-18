@@ -11,6 +11,10 @@ export default defineConfig({
   root: extensionRoot,
   plugins: [react()],
   publicDir: false,
+  // Library mode leaves process.env.NODE_ENV untouched, but content scripts run without `process`.
+  define: {
+    'process.env.NODE_ENV': JSON.stringify('production'),
+  },
   build: {
     outDir: resolve(extensionRoot, 'dist'),
     emptyOutDir: false,

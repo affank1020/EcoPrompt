@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPanelOpen, type AppDispatch, type RootState } from './store';
 import type { ModelId } from './mockApi';
+import { watchSignedIn } from './authState';
+import type { SaveResult } from './syncState';
 
 type Props = { onApply: (text: string) => boolean };
 
@@ -20,8 +22,10 @@ const icon = (name: 'leaf' | 'drop' | 'bolt' | 'spark' | 'chevron' | 'check') =>
 
 export function Widget({ onApply }: Props) {
   const dispatch = useDispatch<AppDispatch>();
-  const { prompt, status, analysis, panelOpen, error } = useSelector((state: RootState) => state.eco);
+  const { prompt, status, analysis, panelOpen, error, lastSave } = useSelector((state: RootState) => state.eco);
   const [notice, setNotice] = useState('');
+  const [signedIn, setSignedIn] = useState(false);
+  useEffect(() => watchSignedIn(setSignedIn), []);
   const hasPrompt = prompt.trim().length > 0;
   const recommended = analysis?.models.find(model => model.id === analysis.recommendation);
   const toggle = () => dispatch(setPanelOpen(!panelOpen));
@@ -115,10 +119,19 @@ export function Widget({ onApply }: Props) {
           <div><strong>Up to {analysis.savingsPercent}% lower estimated water use</strong><small>Mock comparison vs. balanced-model baseline</small></div>
         </div>
       </div>}
+      <div className="eco-sync">{syncLine(signedIn, lastSave?.state)}</div>
       <div className="eco-footer"><span>◉ Local mock analysis</span><span>No prompt uploaded</span></div>
       {notice && <div role="status" className="eco-toast">{notice}</div>}
     </div>}
   </section>;
+}
+
+function syncLine(signedIn: boolean, state: SaveResult | 'saving' | undefined) {
+  if (state === 'saving') return 'Saving…';
+  // Only once the row is actually in Supabase.
+  if (state === 'saved') return 'Saved to your history ✓';
+  if (state === 'queued') return 'Will sync when you\'re back online';
+  return signedIn ? 'Prompts you send are saved to your history' : 'Saved on this device · log in from the extension icon to sync';
 }
 
 function ModelBar({ id, name, value, max, recommended }: { id: ModelId; name: string; value: number; max: number; recommended: boolean }) {

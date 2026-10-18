@@ -1,5 +1,6 @@
 import { configureStore, createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { analyzePrompt, type Analysis } from './mockApi';
+import type { SaveResult } from './syncState';
 
 export const requestAnalysis = createAsyncThunk('eco/analyze', analyzePrompt);
 
@@ -11,6 +12,8 @@ interface EcoState {
   analysis: Analysis | null;
   error: string | null;
   activeRequestId: string | null;
+  // The last estimate this tab sent to be saved, for the widget's status line.
+  lastSave: { id: string; state: SaveResult | 'saving' } | null;
 }
 
 const initialState: EcoState = {
@@ -21,6 +24,7 @@ const initialState: EcoState = {
   analysis: null,
   error: null,
   activeRequestId: null,
+  lastSave: null,
 };
 
 const slice = createSlice({
@@ -37,6 +41,9 @@ const slice = createSlice({
     },
     setPanelOpen(state, action: PayloadAction<boolean>) {
       state.panelOpen = action.payload;
+    },
+    setLastSave(state, action: PayloadAction<EcoState['lastSave']>) {
+      state.lastSave = action.payload;
     },
     setEnabled(state, action: PayloadAction<boolean>) {
       state.enabled = action.payload;
@@ -68,7 +75,7 @@ const slice = createSlice({
   },
 });
 
-export const { setPrompt, setPanelOpen, setEnabled } = slice.actions;
+export const { setPrompt, setPanelOpen, setEnabled, setLastSave } = slice.actions;
 
 export const store = configureStore({ reducer: { eco: slice.reducer } });
 export type RootState = ReturnType<typeof store.getState>;

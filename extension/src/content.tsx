@@ -1,7 +1,10 @@
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { store, requestAnalysis, setPrompt } from './store';
+import { store, requestAnalysis, setLastSave, setPrompt } from './store';
 import { Widget } from './widget';
+import { analyzePrompt, type Complexity } from './mockApi';
+import type { EstimateComplexity, StoredEstimate } from './guestStore';
+import { SAVE_ESTIMATE, UPLOAD_QUEUE_KEY, watchStorageKey, type QueuedEstimate, type SaveEstimateMessage, type SaveResult } from './syncState';
 import widgetCss from './widget.css?inline';
 
 const HOST_ID = 'ecoprompt-extension-mount';
@@ -11,6 +14,11 @@ const SELECTORS = [
   'form [contenteditable="true"][role="textbox"]',
   'form div[contenteditable="true"]',
   'form textarea',
+];
+const COMPLEXITY: Record<Complexity, EstimateComplexity> = { Simple: 'easy', Moderate: 'medium', Advanced: 'hard' };
+const SEND_BUTTON_SELECTORS = [
+  '[data-testid="send-button"]',
+  'button[aria-label*="Send" i]',
 ];
 
 function findComposer(): HTMLElement | HTMLTextAreaElement | null {
@@ -113,15 +121,58 @@ function boot() {
   window.setInterval(refresh, 1400);
   refresh();
 
-  let savedPrompt = '';
-  store.subscribe(() => {
-    const { analysis, status } = store.getState().eco;
-    if (status !== 'ready' || !analysis || savedPrompt === analysis.prompt) return;
-    savedPrompt = analysis.prompt;
-    if (typeof chrome !== 'undefined' && chrome.storage?.local) {
-      void chrome.storage.local.set({ ecoLatest: { ...analysis, analyzedAt: Date.now() } });
+  // Older builds stored the full prompt here. Prompt text is never stored, so drop it.
+  void chrome.storage.local.remove('ecoLatest');
+
+  // Save one estimate per sent prompt (not per typing pause). Lengths and numbers only.
+  // The background worker decides where it goes: the guest store, or the upload queue.
+  let lastSavedAt = 0;
+  async function saveSentPrompt() {
+    const prompt = readComposer(findComposer());
+    const now = Date.now();
+    if (!prompt.trim() || now - lastSavedAt < 1500) return;
+    lastSavedAt = now;
+    const { analysis } = store.getState().eco;
+    const estimate = analysis?.prompt === prompt ? analysis : await analyzePrompt(prompt);
+    const entry: StoredEstimate = {
+      id: crypto.randomUUID(),
+      createdAt: now,
+      site: location.hostname,
+      promptChars: prompt.length,
+      tokens: estimate.inputTokens + estimate.predictedOutputTokens,
+      complexity: COMPLEXITY[estimate.complexity],
+      waterMl: estimate.baseline.waterMl,
+      energyWh: estimate.baseline.energyWh,
+    };
+    store.dispatch(setLastSave({ id: entry.id, state: 'saving' }));
+    try {
+      const result = await chrome.runtime.sendMessage<SaveEstimateMessage, SaveResult | null>({ type: SAVE_ESTIMATE, estimate: entry });
+      if (store.getState().eco.lastSave?.id !== entry.id) return; // A newer prompt was sent meanwhile.
+      store.dispatch(setLastSave(result ? { id: entry.id, state: result } : null));
+    } catch (err) {
+      console.warn('EcoPrompt: could not reach the background worker:', err instanceof Error ? err.message : err);
+      if (store.getState().eco.lastSave?.id === entry.id) store.dispatch(setLastSave(null));
+    }
+  }
+
+  // A queued estimate leaves the queue once a retry inserts it.
+  watchStorageKey<QueuedEstimate[]>(UPLOAD_QUEUE_KEY, queue => {
+    const { lastSave } = store.getState().eco;
+    if (lastSave?.state === 'queued' && !queue?.some(item => item.id === lastSave.id)) {
+      store.dispatch(setLastSave({ id: lastSave.id, state: 'saved' }));
     }
   });
+
+  // Capture phase, so this runs before the page clears the composer.
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' || event.shiftKey || event.isComposing) return;
+    const composer = findComposer();
+    if (composer && event.target instanceof Node && composer.contains(event.target)) void saveSentPrompt();
+  }, true);
+  document.addEventListener('click', event => {
+    if (!(event.target instanceof Element)) return;
+    if (SEND_BUTTON_SELECTORS.some(selector => (event.target as Element).closest(selector))) void saveSentPrompt();
+  }, true);
 }
 
 if (document.readyState === 'loading') {
