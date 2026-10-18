@@ -1,7 +1,9 @@
 "use server";
 
+import { refresh } from "next/cache";
+import { saveEstimates } from "../data/saveEstimates";
 import type { EstimateResult } from "../types";
-import { estimate } from "./client";
+import { estimate, estimateMany } from "./client";
 import { isKnownModel } from "./models";
 import { FEATURES } from "../features";
 
@@ -33,10 +35,15 @@ async function mapWithLimit<T, R>(items: T[], limit: number, fn: (item: T) => Pr
     return results;
 }
 
-export async function checkPrompt(prompt: string, model: string): Promise<EstimateResult> {
+// Estimates one prompt and, for signed-in users, saves it to their history
+export async function checkPrompt(prompt: string, model: string): Promise<{ result: EstimateResult; saved: boolean }> {
     validatePrompt(prompt);
     validateModel(model);
-    return estimate(prompt, model);
+    const result = await estimate(prompt, model);
+    const saved = await saveEstimates([prompt], [result], "web");
+    // Re-render the page so totals on it (e.g. the dashboard) include this check
+    if (saved) refresh();
+    return { result, saved };
 }
 
 // One prompt against several models
@@ -49,11 +56,14 @@ export async function compareModels(prompt: string, models: string[]): Promise<E
     return mapWithLimit(models, CONCURRENCY, (model) => estimate(prompt, model));
 }
 
-// Several prompts against one model, one API call per prompt
-export async function estimatePrompts(prompts: string[], model: string): Promise<EstimateResult[]> {
+// Several prompts in one /analyse/bulk call, saved to a signed-in user's history
+export async function estimatePrompts(prompts: string[], model: string): Promise<{ results: EstimateResult[]; saved: boolean }> {
     if (!Array.isArray(prompts) || prompts.length === 0) throw new Error("No prompts to check");
     if (prompts.length > MAX_BULK_PROMPTS) throw new Error(`Check up to ${MAX_BULK_PROMPTS} prompts at once`);
     prompts.forEach(validatePrompt);
     validateModel(model);
-    return mapWithLimit(prompts, CONCURRENCY, (prompt) => estimate(prompt, model));
+    const results = await estimateMany(prompts, model);
+    const saved = await saveEstimates(prompts, results, "bulk");
+    if (saved) refresh();
+    return { results, saved };
 }

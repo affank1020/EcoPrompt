@@ -1,20 +1,33 @@
-import { mockCompress } from "./mock";
+import { backendPost } from "../backend";
+import type { CompressionDetails, CompressionPreset } from "../types";
 
-// The one place that talks to the compression service. Server-side only, so the
-// service URL (and any key added later) never reaches the browser.
-export async function compress(prompt: string, model: string): Promise<string> {
-    const baseUrl = process.env.BACKEND_API_URL;
-    if (!baseUrl) return mockCompress(prompt);
+// What /compress returns
+type CompressResponse = {
+    compressed: string;
+    reason: string;
+    preset: CompressionPreset;
+    tokens_before: number;
+    tokens_after: number;
+    negations_lost: string[];
+    numbers_lost: string[];
+    latency_ms: number;
+};
 
-    const res = await fetch(`${baseUrl.replace(/\/$/, "")}/compress`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, model }),
-        cache: "no-store",
-    });
-    if (!res.ok) {
-        throw new Error(`Compression service returned ${res.status}`);
-    }
-    const { compressed } = (await res.json()) as { compressed: string };
-    return compressed;
+export async function compress(
+    prompt: string,
+    preset: CompressionPreset,
+): Promise<{ compressed: string; details: CompressionDetails }> {
+    const r = await backendPost<CompressResponse>("/compress", { prompt, preset });
+    return {
+        compressed: r.compressed,
+        details: {
+            preset: r.preset,
+            reason: r.reason,
+            tokensBefore: r.tokens_before,
+            tokensAfter: r.tokens_after,
+            negationsLost: r.negations_lost ?? [],
+            numbersLost: r.numbers_lost ?? [],
+            latencyMs: r.latency_ms,
+        },
+    };
 }

@@ -4,8 +4,9 @@ import { useState, useTransition } from "react";
 import { compressPrompt } from "../../lib/compression/actions";
 import { checkPrompt } from "../../lib/estimation/actions";
 import { DEFAULT_MODEL_ID, getModel, MODELS } from "../../lib/estimation/models";
+import { FEATURES } from "../../lib/features";
 import type { CompressionResult, EstimateResult } from "../../lib/types";
-import { formatNumber } from "../ui/format";
+import { formatNumber, formatWh } from "../ui/format";
 import UncertaintyRange from "../ui/UncertaintyRange";
 import CompressionPanel from "./CompressionPanel";
 import styles from "./PromptChecker.module.scss";
@@ -19,7 +20,7 @@ export default function PromptChecker({ variant }: Props) {
     const [prompt, setPrompt] = useState("");
     const [modelId, setModelId] = useState(DEFAULT_MODEL_ID);
     // The prompt the current result is for, so editing the input doesn't relabel old results
-    const [checked, setChecked] = useState<{ prompt: string; result: EstimateResult } | null>(null);
+    const [checked, setChecked] = useState<{ prompt: string; result: EstimateResult; saved: boolean } | null>(null);
     const [compression, setCompression] = useState<CompressionResult | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [checking, startCheck] = useTransition();
@@ -30,8 +31,8 @@ export default function PromptChecker({ variant }: Props) {
         setError(null);
         startCheck(async () => {
             try {
-                const result = await checkPrompt(text, model);
-                setChecked({ prompt: text, result });
+                const { result, saved } = await checkPrompt(text, model);
+                setChecked({ prompt: text, result, saved });
                 setCompression(null);
             } catch (err) {
                 setError(err instanceof Error ? err.message : "Something went wrong. Try again.");
@@ -54,7 +55,7 @@ export default function PromptChecker({ variant }: Props) {
     const applyCompressed = () => {
         if (!compression) return;
         setPrompt(compression.compressed);
-        setChecked({ prompt: compression.compressed, result: compression.optimised });
+        setChecked({ prompt: compression.compressed, result: compression.optimised, saved: false });
         setCompression(null);
     };
 
@@ -101,19 +102,29 @@ export default function PromptChecker({ variant }: Props) {
             {checked ? (
                 <section className={`${styles.result} ${checking ? styles.stale : ""}`} aria-live="polite">
                     <header className={styles.resultHeader}>
-                        <label className={styles.modelField}>
-                            Estimated water for
-                            <select value={modelId} onChange={(e) => changeModel(e.target.value)} className={styles.select}>
-                                {MODELS.map((m) => (
-                                    <option key={m.id} value={m.id}>{m.name}</option>
-                                ))}
-                            </select>
-                        </label>
+                        {/* The backend estimates without a model, so the model picker only shows when comparing is on */}
+                        {FEATURES.compareModels ? (
+                            <label className={styles.modelField}>
+                                Estimated water for
+                                <select value={modelId} onChange={(e) => changeModel(e.target.value)} className={styles.select}>
+                                    {MODELS.map((m) => (
+                                        <option key={m.id} value={m.id}>{m.name}</option>
+                                    ))}
+                                </select>
+                            </label>
+                        ) : (
+                            <span className={styles.modelField}>
+                                Estimated water · {formatWh(checked.result.energyWh)} energy
+                            </span>
+                        )}
                         <span className={styles.tokens}>
-                            {formatNumber(checked.result.tokens)} tokens{model ? ` · ${model.size} model` : ""}
+                            {formatNumber(checked.result.tokens)} tokens
+                            {checked.result.complexity ? ` · ${checked.result.complexity} prompt` : ""}
+                            {FEATURES.compareModels && model ? ` · ${model.size} model` : ""}
                         </span>
                     </header>
                     <UncertaintyRange {...checked.result} size="lg" />
+                    {checked.saved ? <p className={styles.saved}>Saved to your history ✓</p> : null}
 
                     {compression ? (
                         <CompressionPanel
