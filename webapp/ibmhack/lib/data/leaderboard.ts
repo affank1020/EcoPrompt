@@ -1,9 +1,10 @@
 import { connection } from "next/server";
 import { getCurrentUser } from "../auth";
 import { getModel } from "../estimation/models";
+import { createClient } from "../supabase/server";
 import type { Challenge, LeaderboardEntry } from "../types";
 import { DAY_MS, startOfDay, startOfWeek } from "./dates";
-import { getMockEstimates, MOCK_USERS } from "./mock";
+import { getUserEstimates } from "./estimates";
 
 export const MIN_PROMPTS_TO_RANK = 10;
 
@@ -13,43 +14,54 @@ export type Leaderboard = {
     since: string; // ISO date the window starts
 };
 
+// One row per user from the weekly_leaderboard() database function
+type LeaderboardRow = {
+    user_id: string;
+    username: string;
+    display_name: string | null;
+    avatar_url: string | null;
+    prompts: number;
+    total_ml: number;
+    avg_ml: number;
+    total_wh: number;
+};
+
 // Lowest average water per prompt over the past 7 days wins
 export async function getWeeklyLeaderboard(minPrompts = MIN_PROMPTS_TO_RANK): Promise<Leaderboard> {
     await connection();
-    const now = new Date();
-    const since = now.getTime() - 7 * DAY_MS;
-    // TODO(auth): the user comes from the Supabase session once login exists
-    const currentUser = await getCurrentUser();
+    const since = new Date(Date.now() - 7 * DAY_MS).toISOString();
+    const supabase = await createClient();
+    const [currentUser, { data, error }] = await Promise.all([
+        getCurrentUser(),
+        supabase.rpc("weekly_leaderboard", { p_since: since }),
+    ]);
+    if (error) throw new Error(`Couldn't load the leaderboard: ${error.message}`);
 
-    // TODO(supabase): replace with an aggregate query (or view) grouped by user_id over the past 7 days,
-    // joined to profiles for display names
-    const totals = new Map<string, { prompts: number; totalMl: number }>();
-    for (const e of getMockEstimates(now)) {
-        if (Date.parse(e.createdAt) <= since) continue;
-        const t = totals.get(e.userId) ?? { prompts: 0, totalMl: 0 };
-        t.prompts += 1;
-        t.totalMl += e.waterMl;
-        totals.set(e.userId, t);
+    const entries: LeaderboardEntry[] = (data as LeaderboardRow[]).map((row) => ({
+        user: { id: row.user_id, name: row.display_name ?? row.username, isAnonymous: false },
+        prompts: Number(row.prompts),
+        totalMl: row.total_ml,
+        totalWh: row.total_wh,
+        avgMl: row.avg_ml,
+        rank: null,
+        isCurrentUser: row.user_id === currentUser.id,
+    }));
+    // Always show the current user, even before their first prompt this week
+    if (!currentUser.isAnonymous && !entries.some((e) => e.isCurrentUser)) {
+        entries.push({
+            user: currentUser, prompts: 0, totalMl: 0, totalWh: 0, avgMl: 0, rank: null,
+            isCurrentUser: true,
+        });
     }
-
-    const entries: LeaderboardEntry[] = MOCK_USERS.map((user) => {
-        const t = totals.get(user.id) ?? { prompts: 0, totalMl: 0 };
-        return {
-            user,
-            prompts: t.prompts,
-            totalMl: t.totalMl,
-            avgMl: t.prompts ? t.totalMl / t.prompts : 0,
-            rank: null,
-            isCurrentUser: user.id === currentUser.id,
-        };
-    });
 
     const ranked = entries.filter((e) => e.prompts >= minPrompts).sort((a, b) => a.avgMl - b.avgMl);
     ranked.forEach((e, i) => (e.rank = i + 1));
-    const unranked = entries.filter((e) => e.prompts < minPrompts).sort((a, b) => b.prompts - a.prompts);
+    const unranked = entries.filter((e) => e.prompts < minPrompts).sort((a, b) => b.prompts -
+        a.prompts);
 
-    return { entries: [...ranked, ...unranked], minPrompts, since: new Date(since).toISOString() };
+    return { entries: [...ranked, ...unranked], minPrompts, since };
 }
+
 
 // Challenges run Monday to Sunday and track the current user's progress
 export async function getChallenges(): Promise<Challenge[]> {
@@ -57,10 +69,8 @@ export async function getChallenges(): Promise<Challenge[]> {
     const now = new Date();
     const weekStart = startOfWeek(now.getTime());
     const endsAt = new Date(weekStart + 7 * DAY_MS).toISOString();
-    // TODO(auth): the user comes from the Supabase session once login exists
-    const user = await getCurrentUser();
-    // TODO(supabase): read challenge definitions from a challenges table and progress from estimates
-    const mine = getMockEstimates(now).filter((e) => e.userId === user.id);
+    // This week, plus enough days back for a 7-day streak that started last week
+    const mine = await getUserEstimates(Math.min(weekStart, startOfDay(now.getTime()) - 8 * DAY_MS));
     const thisWeek = mine.filter((e) => Date.parse(e.createdAt) >= weekStart);
 
     const activeDays = new Set(mine.map((e) => startOfDay(Date.parse(e.createdAt))));

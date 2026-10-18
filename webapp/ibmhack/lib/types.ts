@@ -29,6 +29,7 @@ export type Estimate = EstimateResult & {
     createdAt: string; // ISO date
     site: string;
     promptChars: number;
+    energyWh: number;
 };
 
 export type User = {
@@ -44,6 +45,7 @@ export type UsagePoint = {
     waterMl: number;
     lowMl: number;
     highMl: number;
+    energyWh: number;
     prompts: number;
 };
 
@@ -55,6 +57,8 @@ export type UsageStats = {
     avgMl: number;
     thisWeekMl: number;
     lastWeekMl: number;
+    totalWh: number;
+    avgWh: number;
 };
 
 export type LeaderboardEntry = {
@@ -62,6 +66,7 @@ export type LeaderboardEntry = {
     prompts: number;
     avgMl: number;
     totalMl: number;
+    totalWh: number;
     rank: number | null; // null when below the minimum prompt count
     isCurrentUser: boolean;
 };

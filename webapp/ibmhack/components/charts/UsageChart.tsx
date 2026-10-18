@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { Granularity, UsagePoint } from "../../lib/types";
-import { formatDate, formatMl, formatRange } from "../ui/format";
+import { formatDate, formatMl, formatWh, formatRange } from "../ui/format";
 import SegmentedToggle from "../ui/SegmentedToggle";
 import { CHART_COLORS } from "./palette";
 import styles from "./UsageChart.module.scss";
@@ -35,6 +35,7 @@ function ChartTooltip({ active, payload, granularity }: { active?: boolean; payl
         <div className={styles.tooltip}>
             <span className={styles.tooltipDate}>{prefix}{formatDate(d.start, format)}</span>
             <strong>{formatMl(d.waterMl)}</strong>
+            <span className={styles.tooltipMuted}>{formatWh(d.energyWh)} energy</span>
             <span className={styles.tooltipMuted}>Range {formatRange(d.lowMl, d.highMl)}</span>
             <span className={styles.tooltipMuted}>{d.prompts} prompts</span>
         </div>
