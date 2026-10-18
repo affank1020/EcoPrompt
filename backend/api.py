@@ -95,3 +95,9 @@ def compress_prompt(req: CompressRequest):
     print(f"Compression ({result['preset']}, {result['reason']}) took {result['latency_ms']} ms, "
         f"tokens {result['tokens_before']} -> {result['tokens_after']}.")
     return result
+
+@app.post("/analyse/bulk")
+def analyse_bulk(req: BulkPromptRequest):
+    """Analyse up to 200 prompts in order using the same classifier as /analyse."""
+    results = [analyse_one(prompt, req.epsilon) for prompt in req.prompts]
+    return {"results": results, "count": len(results)}
