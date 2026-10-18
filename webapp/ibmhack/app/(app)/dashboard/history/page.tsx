@@ -36,7 +36,7 @@ export default function HistoryPage(props: PageProps<"/dashboard/history">) {
     <>
       <PageHeader
         title="Estimate history"
-        description="Every prompt the extension has estimated. Each figure is shown with its uncertainty range; the bar shows where it sits against the others on this page."
+        description="Your submitted extension usage and saved website checks. Methods are labelled separately: backend estimates have no uncertainty interval; website mocks and extension estimates are illustrative."
       />
       <Suspense fallback={<Skeleton height={640} label="Loading history" />}>
         <History searchParams={props.searchParams} />

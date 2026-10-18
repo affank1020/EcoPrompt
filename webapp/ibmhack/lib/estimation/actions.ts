@@ -1,7 +1,9 @@
 "use server";
 
-import type { EstimateResult } from "../types";
-import { estimate } from "./client";
+import { refresh } from "next/cache";
+import { saveEstimates } from "../data/saveEstimates";
+import type { EstimateResult, HistorySaveStatus } from "../types";
+import { estimate, estimateMany } from "./client";
 import { isKnownModel } from "./models";
 
 // Server actions are public endpoints, so cap what one call can ask for
@@ -32,10 +34,13 @@ async function mapWithLimit<T, R>(items: T[], limit: number, fn: (item: T) => Pr
     return results;
 }
 
-export async function checkPrompt(prompt: string, model: string): Promise<EstimateResult> {
+export async function checkPrompt(prompt: string, model: string): Promise<{ result: EstimateResult; history: HistorySaveStatus }> {
     validatePrompt(prompt);
     validateModel(model);
-    return estimate(prompt, model);
+    const result = await estimate(prompt, model);
+    const history = await saveEstimates([prompt], [result], "web");
+    if (history === "saved") refresh();
+    return { result, history };
 }
 
 // One prompt against several models
@@ -47,11 +52,14 @@ export async function compareModels(prompt: string, models: string[]): Promise<E
     return mapWithLimit(models, CONCURRENCY, (model) => estimate(prompt, model));
 }
 
-// Several prompts against one model, one API call per prompt
-export async function estimatePrompts(prompts: string[], model: string): Promise<EstimateResult[]> {
+// One backend request and one atomic history insert for the whole batch.
+export async function estimatePrompts(prompts: string[], model: string): Promise<{ results: EstimateResult[]; history: HistorySaveStatus }> {
     if (!Array.isArray(prompts) || prompts.length === 0) throw new Error("No prompts to check");
     if (prompts.length > MAX_BULK_PROMPTS) throw new Error(`Check up to ${MAX_BULK_PROMPTS} prompts at once`);
     prompts.forEach(validatePrompt);
     validateModel(model);
-    return mapWithLimit(prompts, CONCURRENCY, (prompt) => estimate(prompt, model));
+    const results = await estimateMany(prompts, model);
+    const history = await saveEstimates(prompts, results, "bulk");
+    if (history === "saved") refresh();
+    return { results, history };
 }

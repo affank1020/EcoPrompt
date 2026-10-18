@@ -30,12 +30,25 @@ export default function CompressionPanel({ original, result, onUse, onDismiss }:
         }
     };
 
-    if (savedMl <= 0) {
+    const d = result.details;
+    const explanation = {
+        ok: "Prompt shortened. Review the rewrite before using it.",
+        too_short: "The prompt is below the backend’s minimum length; the original was kept.",
+        no_savings: "Compression did not reduce the token count; the original was kept.",
+        verification_failed: "The candidate lost a negation or number; the original was kept.",
+        local_mock: "Local mock compressor: simple filler removal, not backend inference. Presets do not change this mock; backend token counts are unavailable.",
+    }[d.reason];
+    const details = <div className={styles.scale}>
+        <p>{d.preset} · {explanation}</p>
+        {d.tokensBefore !== null && <p>Compressor tokens: {formatNumber(d.tokensBefore)} → {formatNumber(d.tokensAfter!)} · {formatNumber(d.tokensSaved!)} fewer · {d.latencyMs} ms</p>}
+        {d.negationsLost.length > 0 && <p>Negations lost by candidate: {d.negationsLost.join(", ")}</p>}
+        {d.numbersLost.length > 0 && <p>Numbers lost by candidate: {d.numbersLost.join(", ")}</p>}
+    </div>;
+
+    if (result.compressed.trim() === original.trim()) {
         return (
             <div className={styles.panel}>
-                <p className={styles.lean}>
-                    This prompt is already concise. There was nothing to trim without changing what it asks for.
-                </p>
+                {details}
                 <button type="button" className={styles.link} onClick={onDismiss}>Close</button>
             </div>
         );
@@ -43,14 +56,16 @@ export default function CompressionPanel({ original, result, onUse, onDismiss }:
 
     return (
         <div className={styles.panel}>
-            <div className={styles.savings}>
+            {details}
+            {savedMl > 0 ? <div className={styles.savings}>
                 <span className={styles.savedValue}>−{formatMl(savedMl)}</span>
                 <span className={styles.savedDetail}>
                     {savedPct.toFixed(0)}% lower estimated water · {formatNumber(savedTokens)} fewer tokens
                 </span>
             </div>
 
-            <div className={styles.bars} aria-hidden="true">
+            : <p className={styles.lean}>The rewrite has no estimated water reduction. Token reduction alone does not guarantee lower estimated usage.</p>}
+            {savedMl > 0 && <div className={styles.bars} aria-hidden="true">
                 <div className={styles.barRow}>
                     <span>Before</span>
                     <span className={styles.track}><span className={styles.before} style={{ width: "100%" }} /></span>
@@ -63,7 +78,7 @@ export default function CompressionPanel({ original, result, onUse, onDismiss }:
                     </span>
                     <span className={styles.barValue}>{formatMl(result.optimised.waterMl)}</span>
                 </div>
-            </div>
+            </div>}
 
             <div className={styles.compare}>
                 <div className={styles.version}>
@@ -76,9 +91,9 @@ export default function CompressionPanel({ original, result, onUse, onDismiss }:
                 </div>
             </div>
 
-            <p className={styles.scale}>
+            {savedMl > 0 && <p className={styles.scale}>
                 Across {formatNumber(SCALE_PROMPTS)} prompts like this, the potential estimated reduction is {formatMl(savedMl * SCALE_PROMPTS)}. This is not recorded savings.
-            </p>
+            </p>}
 
             <div className={styles.actions}>
                 <button type="button" className={styles.use} onClick={onUse}>Use compressed prompt</button>

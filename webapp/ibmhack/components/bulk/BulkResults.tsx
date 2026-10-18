@@ -41,7 +41,7 @@ export default function BulkResults({ prompts, results, model }: Props) {
             <header className={styles.header}>
                 <div>
                     <h2 className={styles.title}>
-                        {formatNumber(results.length)} prompts on {model.name}
+                        {formatNumber(results.length)} prompts{results[0]?.methodology === "backend-token-v1" ? " · model independent" : ` on ${model.name}`}
                     </h2>
                     <p className={styles.total}>
                         <span className={styles.totalValue}>{formatMl(total.waterMl)}</span> estimated in total
@@ -58,7 +58,7 @@ export default function BulkResults({ prompts, results, model }: Props) {
                         <tr>
                             <th scope="col" className={styles.index}>#</th>
                             <th scope="col">Prompt</th>
-                            <th scope="col" className={styles.numeric}>Tokens</th>
+                            <th scope="col" className={styles.numeric}>{results[0]?.methodology === "backend-token-v1" ? "Input tokens" : "Estimated tokens"}</th>
                             <th scope="col">Estimated water</th>
                             <th scope="col" className={styles.numeric}>Share</th>
                         </tr>
@@ -86,7 +86,7 @@ export default function BulkResults({ prompts, results, model }: Props) {
                             <th scope="row">Total</th>
                             <td className={styles.numeric}>{formatNumber(total.tokens)}</td>
                             <td>
-                                <UncertaintyRange {...total} />
+                                <UncertaintyRange {...total} methodology={results[0]?.methodology} />
                             </td>
                             <td className={styles.numeric}>100%</td>
                         </tr>

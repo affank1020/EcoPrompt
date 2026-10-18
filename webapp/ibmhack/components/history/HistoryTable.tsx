@@ -60,11 +60,11 @@ export default function HistoryTable({ rows, params }: Props) {
                                 <td>{row.site}<span className={styles.subtle}>{row.methodology === "ecoprompt-illustrative-v1" ? "Illustrative extension estimate" : row.methodology ?? "Legacy / unspecified"}</span></td>
                                 <td>
                                     <span className={`${styles.dot} ${model ? styles[model.size] : ""}`} aria-hidden="true" />
-                                    {model?.name ?? row.model}
+                                    {row.methodology === "backend-token-v1" ? "Model independent" : model?.name ?? row.model}
                                 </td>
                                 <td className={styles.numeric}>
                                     {formatNumber(row.promptChars)} chars
-                                    <span className={styles.subtle}>{formatNumber(row.tokens)} tokens</span>
+                                    <span className={styles.subtle}>{formatNumber(row.tokens)} {row.methodology === "backend-token-v1" ? "input tokens" : "estimated tokens"}</span>
                                 </td>
                                 <td className={styles.water}>
                                     <UncertaintyRange {...row} scaleMax={scaleMax} />
