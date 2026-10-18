@@ -31,7 +31,7 @@ The new store/upload has an explicit field allowlist and never contains raw prom
 
 Automated: extension `npm run typecheck`, `npm run build` (also run by `npm test`), and all 50 tests pass. New tests cover metadata validation, duplicate UUIDs, timestamps/units, account ownership, bounded storage, restart/offline recovery, permanent rejection recovery and usage events independent of savings. Existing regression coverage includes navigation/new chat, rewrites, model changes, migrations, cumulative savings, theme and background panel fallback.
 
-Website: `npx next typegen && npx tsc --noEmit` passes. The full production build is separately reported in the PR. Light/dark account-menu layout was inspected in a browser preview; it scrolls within the unchanged compact Overview dimensions. Preview is not a live extension/auth test.
+Website: `npx next typegen && npx tsc --noEmit` passes. `npm run build -- --webpack` also passes. The sandboxed default Turbopack build stalled during compilation and was stopped; the production webpack build completed outside the sandbox. Light/dark account-menu layout was inspected in a browser preview; it scrolls within the unchanged compact Overview dimensions. Preview is not a live extension/auth test.
 
 Still required with configured Chrome/Supabase:
 
