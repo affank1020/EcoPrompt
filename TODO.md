@@ -17,7 +17,7 @@ Tick items off as they're done. See `webapp/ibmhack/docs/auth-handoff.md` for th
 - [x] Supabase auth on the website (email/password + Google, `proxy.ts`, `/auth/callback`)
 
 ## 1. Backend hosting and shared config
-- [ ] Backend hosted (friend), public URL shared
+- [x] Backend hosted at http://148.100.108.239/ (needs an API key)
 - [x] CORS middleware in `backend/api.py` (`ALLOWED_ORIGINS` env var + `chrome-extension://` regex)
 - [x] Backend URL as an env var in the website (`ESTIMATION_API_URL` / `COMPRESSION_API_URL` → one `BACKEND_API_URL`)
 - [x] Backend URL as an env var in the extension (Vite `VITE_BACKEND_URL`, `src/config.ts`)
@@ -36,10 +36,10 @@ All of this is in `supabase/migrations/20261018000001_baseline.sql` (applied 202
 - [x] `lib/data/estimates.ts`: replace the mocks with Supabase queries
 - [x] `lib/data/leaderboard.ts`: call `weekly_leaderboard()`
 - [x] Delete `lib/data/mock.ts`
-- [ ] Single-prompt check calls the backend `/analyse` instead of the local estimator (`/analyse` takes no model)
-- [ ] Bulk check uses the teammate's separate bulk endpoint (being built; wait for it)
-- [ ] Save web estimates to Supabase (`source = 'web'` / `'bulk'`), with all fields filled in
-- [ ] Prompt compression section calling `/compress`
+- [x] Single-prompt check calls the backend `/analyse` (`lib/backend.ts`; model picker hidden while `FEATURES.compareModels` is off)
+- [x] Bulk check uses the teammate's `/analyse/bulk` endpoint (the hosted backend returns 404 for it until it's redeployed from this branch)
+- [ ] Save web estimates to Supabase (`source = 'web'` / `'bulk'`, signed-in users only, lengths and numbers only) — 🔒 IN PROGRESS (main session, 2026-10-18)
+- [x] Prompt compression section calling `/compress` (`CompressionPanel` in the checker, preset `balanced`)
 - [x] Show energy next to water: dashboard, history, leaderboard (bulk waits for its endpoint; compare is a bonus)
 - [ ] (Tomorrow, another teammate) Bring `lib/estimation/methodology.ts` (and the methodology page) in line with the backend formula in `backend/api.py`. They currently disagree: about 5.5 vs 0.95 mL per Wh, and a fixed 400-token reply vs a reply length based on the prompt
 - [x] Nav: check every link (marketing anchors `#compare` `#extension` `#faq` `#methodology` `#why-water`, `AppNav`, CTAs)
