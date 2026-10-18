@@ -3,6 +3,7 @@
 import type { EstimateResult } from "../types";
 import { estimate } from "./client";
 import { isKnownModel } from "./models";
+import { FEATURES } from "../features";
 
 // Server actions are public endpoints, so cap what one call can ask for
 const MAX_PROMPT_CHARS = 50_000;
@@ -40,6 +41,7 @@ export async function checkPrompt(prompt: string, model: string): Promise<Estima
 
 // One prompt against several models
 export async function compareModels(prompt: string, models: string[]): Promise<EstimateResult[]> {
+    if (!FEATURES.compareModels) throw new Error("Comparing models isn't available yet");
     validatePrompt(prompt);
     if (!Array.isArray(models) || models.length === 0) throw new Error("Pick at least one model");
     if (models.length > MAX_COMPARE_MODELS) throw new Error(`Compare up to ${MAX_COMPARE_MODELS} models at once`);
