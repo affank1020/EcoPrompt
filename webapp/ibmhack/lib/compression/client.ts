@@ -3,7 +3,7 @@ import { mockCompress } from "./mock";
 // The one place that talks to the compression service. Server-side only, so the
 // service URL (and any key added later) never reaches the browser.
 export async function compress(prompt: string, model: string): Promise<string> {
-    const baseUrl = process.env.COMPRESSION_API_URL;
+    const baseUrl = process.env.BACKEND_API_URL;
     if (!baseUrl) return mockCompress(prompt);
 
     const res = await fetch(`${baseUrl.replace(/\/$/, "")}/compress`, {
