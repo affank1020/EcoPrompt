@@ -1,11 +1,13 @@
 "use client";
 import { createClient } from "../../lib/supabase/client";
 
-export function GoogleButton({ className }: { className?: string }) {
+export function GoogleButton({ className, next }: { className?: string; next?: string }) {
   async function handleClick() {
+    // /auth/callback reads ?next= and sends the user there after signing in
+    const query = next ? `?next=${encodeURIComponent(next)}` : "";
     await createClient().auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${location.origin}/auth/callback` },
+      options: { redirectTo: `${location.origin}/auth/callback${query}` },
     });
   }
 

@@ -10,6 +10,9 @@ async function SignupForm({
   searchParams: PageProps<"/signup">["searchParams"];
 }) {
   const { error, message, next } = await searchParams;
+  const nextPath = typeof next === "string" ? next : "";
+  // Keep ?next= when switching to log in, so the user still lands where they were going
+  const loginHref = nextPath ? `/login?next=${encodeURIComponent(nextPath)}` : "/login";
   return (
     <form action={signup} className={styles.form}>
       <h1 className={styles.title}>Sign Up</h1>
@@ -19,7 +22,7 @@ async function SignupForm({
       <input
         type="hidden"
         name="next"
-        value={typeof next === "string" ? next : ""}
+        value={nextPath}
       />
       <label className={styles.field}>
         Username{" "}
@@ -55,9 +58,9 @@ async function SignupForm({
 
       <button type="submit" className={styles.submit}>Sign Up</button>
       <div className={styles.divider}>or</div>
-      <GoogleButton className={styles.google} />
+      <GoogleButton className={styles.google} next={nextPath} />
       <p className={styles.footer}>
-        Already have an account? <Link href="/login">Log in</Link>
+        Already have an account? <Link href={loginHref}>Log in</Link>
       </p>
     </form>
   );

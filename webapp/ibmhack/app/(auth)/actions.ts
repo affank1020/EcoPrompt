@@ -4,13 +4,20 @@
   import { safeNext } from "../../lib/auth";
   import { createClient } from "../../lib/supabase/server";
 
+  // Builds an auth page URL that keeps ?next= so the user still lands where they were going
+  function authUrl(page: "/login" | "/signup", params: Record<string, string>, next: FormDataEntryValue | null) {
+      const search = new URLSearchParams(params);
+      if (typeof next === "string" && next) search.set("next", next);
+      return `${page}?${search}`;
+  }
+
   export async function login(formData: FormData) {
       const supabase = await createClient();
       const { error } = await supabase.auth.signInWithPassword({
           email: String(formData.get("email")),
           password: String(formData.get("password")),
       });
-      if (error) redirect(`/login?error=${encodeURIComponent(error.message)}`);
+      if (error) redirect(authUrl("/login", { error: error.message }, formData.get("next")));
       redirect(safeNext(formData.get("next")));
   }
 
@@ -26,14 +33,15 @@
               emailRedirectTo: `${process.env.SITE_URL}/auth/callback`,
           },
       });
-      if (error) redirect(`/signup?error=${encodeURIComponent(error.message)}`);
+      if (error) redirect(authUrl("/signup", { error: error.message }, formData.get("next")));
       // No session means email confirmation is on
-      if (!data.session) redirect("/login?message=Check your email to confirm your account");
-      redirect("/dashboard");
+      if (!data.session) redirect(authUrl("/login", { message: "Check your email to confirm your account" }, formData.get("next")));
+      redirect(safeNext(formData.get("next")));
   }
 
   export async function signout() {
       const supabase = await createClient();
-      await supabase.auth.signOut();
+      // Local scope: end only this browser's session. The default (global) would also sign out the extension.
+      await supabase.auth.signOut({ scope: "local" });
       redirect("/");
   }
