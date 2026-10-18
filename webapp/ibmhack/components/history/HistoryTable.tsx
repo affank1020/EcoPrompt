@@ -56,7 +56,7 @@ export default function HistoryTable({ rows, params }: Props) {
                         return (
                             <tr key={row.id}>
                                 <td className={styles.date}>{formatDateTime(row.createdAt)}</td>
-                                <td>{row.site}</td>
+                                <td>{row.site}<span className={styles.subtle}>{row.methodology === "ecoprompt-illustrative-v1" ? "Illustrative extension estimate" : "Other / legacy methodology"}</span></td>
                                 <td>
                                     <span className={`${styles.dot} ${model ? styles[model.size] : ""}`} aria-hidden="true" />
                                     {model?.name ?? row.model}

@@ -1,3 +1,4 @@
+import { Account } from "./components/Account";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setView, type AppDispatch, type RootState } from "./store";
@@ -92,6 +93,7 @@ export function Widget({
               )}
             </span>
           </button>
+          <Account />
           {onClose && <button className="panel-close" aria-label="Close EcoPrompt" onClick={onClose}>×</button>}
         </div>
       </header>

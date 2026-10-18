@@ -555,3 +555,21 @@
   color: #f2c4a1;
 }
 .eco-app[data-theme="dark"] .compact-error button { color: #ffd6b3; }
+
+.eco-account { position: relative; }
+.account-toggle { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--ink); cursor: pointer; }
+.account-attention { position: absolute; right: -2px; top: -5px; font-size: 10px; color: var(--ink); }
+.account-menu { position: absolute; top: 38px; right: 0; width: 245px; max-height: 400px; overflow-y: auto; z-index: 100; display: flex; flex-direction: column; gap: 10px; padding: 15px; border: 1px solid var(--line); border-radius: 12px; background: #fff; color: var(--ink); box-shadow: 0 8px 30px #0002; font-size: 12px; }
+.eco-app[data-theme="dark"] .account-menu { background: #14242f; }
+.account-menu strong, .account-menu small { overflow-wrap: anywhere; }
+.account-menu small { color: var(--muted); line-height: 1.5; }
+.account-menu form { display: flex; flex-direction: column; gap: 8px; }
+.account-menu input, .account-menu button { box-sizing: border-box; width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: inherit; font: inherit; }
+.account-menu button { cursor: pointer; }
+.account-menu button:disabled { opacity: .5; cursor: default; }
+.account-menu a { color: var(--ocean); }
+/* Keep the menu scrollable inside the existing compact Overview height. */
+.eco-app { position: relative; }
+.eco-account { position: static; }
+.account-toggle { position: relative; }
+.account-menu { top: 50px; right: 16px; max-height: calc(100% - 62px); box-sizing: border-box; }
