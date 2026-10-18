@@ -5,11 +5,16 @@ import { dirname, resolve } from 'node:path';
 
 const extensionRoot = dirname(fileURLToPath(import.meta.url));
 
-// Build the classic MV3 content script into the same directory as the popup.
-// Keep the popup, manifest, and public assets from the first build pass.
+// Build the classic MV3 ChatGPT launcher into the extension output directory.
+// Keep the panel, fallback page, manifest, and public assets from other passes.
 export default defineConfig({
   root: extensionRoot,
   plugins: [react()],
+  // Vite's library build preserves process.env.NODE_ENV by default.
+  // Classic Chrome content scripts have no Node.js `process` global.
+  define: {
+    'process.env.NODE_ENV': JSON.stringify('production'),
+  },
   publicDir: false,
   build: {
     outDir: resolve(extensionRoot, 'dist'),
