@@ -631,3 +631,16 @@ test("running optimisation totals remain cumulative after recent records are cap
   assert.equal(ledger.count, 105);
   assert.equal(ledger.waterMl, 105);
 });
+
+test('usage events share submission deduplication without crediting savings', async () => {
+  const { PassiveTracker } = await import(new URL('passiveTracking.mjs', dir));
+  const usage = []; const optimisations = [];
+  let now = 1000;
+  const tracker = new PassiveTracker(() => null, record => optimisations.push(record), () => now,
+    (text, model, at) => usage.push({ text, model, at }));
+  tracker.observe('Hello');
+  tracker.submit('Hello', '/c/1'); tracker.submit('Hello', '/c/1');
+  assert.equal(usage.length, 1); assert.equal(optimisations.length, 0);
+  now += 3000; tracker.submit('Hello', '/c/2');
+  assert.equal(usage.length, 2); assert.equal(optimisations.length, 0);
+});

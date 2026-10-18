@@ -49,3 +49,7 @@ The staged endpoint proposal and typed schemas are in [BACKEND_CONTRACT.md](BACK
 Opening Assistant analyses the current ChatGPT draft and records the distinct draft in `chrome.storage.local` (`ecoHistoryV4`). The mock uses characters/4 as an input-token proxy, predicts output tokens, and applies illustrative mL/Wh per 1,000 tokens. The water tank shows estimates for attributable submitted changes, plus preserved earlier local estimates. It plays a short water animation when its saved total rises. Word count is recorded too. Identical Assistant drafts are deduplicated.
 
 Model recommendations use a heuristic prompt classification and illustrative per-mode factors, not real model fitness or provider energy data. The prompt-shortening opportunity is estimated during impact analysis; the separate optimisation call produces a template cleanup when the action page opens. Identical prompts produce identical mock answers for repeatable demos. To test ChatGPT's single-page new-chat navigation, reload the unpacked extension, refresh ChatGPT once, then create several chats without refreshing the page. The composer shortcut should appear only while the current draft has text. `npm test` in `extension/` builds and runs the regression checks.
+
+## Account and usage sync
+
+See [ACCOUNT_SYNC.md](ACCOUNT_SYNC.md) for configuration, database migration, privacy, queue behaviour, validation and the manual OAuth/sync checklist.

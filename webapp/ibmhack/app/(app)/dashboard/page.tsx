@@ -52,7 +52,7 @@ export default function DashboardPage() {
     <>
       <PageHeader
         title="Your water footprint"
-        description="Estimated water used by the prompts you've sent, based on the estimates the extension records."
+        description="Illustrative extension estimates only (v1), not measured consumption or savings. Other estimation methods are listed separately in history and excluded from these totals."
         actions={<Link href="/dashboard/history" className={styles.link}>View history →</Link>}
       />
       <section className={styles.checker}>

@@ -109,7 +109,8 @@ export class PassiveTracker {
   private lastSubmission: { signature: string; at: number } | null = null;
   constructor(private readonly readModel: () => string | null,
     private readonly record: (optimisation: OptimisationRecord) => void,
-    private readonly now: () => number = Date.now) {}
+    private readonly now: () => number = Date.now,
+    private readonly usage?: (text: string, model: string | null, at: number) => void) {}
 
   observe(text: string) {
     const clean = text.trim();
@@ -151,6 +152,7 @@ export class PassiveTracker {
     const draft = this.draft!;
     this.draft = null;
     const finalModel = this.readModel();
+    try { this.usage?.(clean, finalModel, at); } catch { /* Usage must not interrupt optimisation tracking. */ }
     const rewriteUsed = draft.rewriteText === clean && estimateTokens(clean) < estimateTokens(draft.originalText);
     const changedModel = Boolean(draft.initialModel && finalModel && draft.initialModel !== finalModel);
     const manualModel = changedModel && draft.manualModel === finalModel && draft.assistedModel !== finalModel;

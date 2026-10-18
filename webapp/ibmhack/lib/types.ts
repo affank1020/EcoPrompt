@@ -29,6 +29,7 @@ export type Estimate = EstimateResult & {
     createdAt: string; // ISO date
     site: string;
     promptChars: number;
+    methodology?: string;
 };
 
 export type User = {

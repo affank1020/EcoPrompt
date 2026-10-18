@@ -2,7 +2,7 @@ import { connection } from "next/server";
 import { getCurrentUser } from "../auth";
 import type { Estimate, Granularity, UsagePoint, UsageStats } from "../types";
 import { bucketStart, DAY_MS, previousBucket } from "./dates";
-import { getMockEstimates } from "./mock";
+import { createClient } from "../supabase/server";
 
 export type SortKey = "date" | "site" | "model" | "length" | "water";
 export type SortDir = "asc" | "desc";
@@ -27,13 +27,28 @@ export type EstimatePage = {
 const BUCKET_COUNT: Record<Granularity, number> = { day: 30, week: 12, month: 6 };
 
 // Every query below is scoped to the current user's estimates
-async function getUserEstimates(): Promise<{ estimates: Estimate[]; now: Date }> {
+async function getUserEstimates(illustrativeOnly = false): Promise<{ estimates: Estimate[]; now: Date }> {
     await connection();
     const now = new Date();
-    // TODO(auth): the user comes from the Supabase session once login exists
     const user = await getCurrentUser();
-    // TODO(supabase): select * from estimates where user_id = user.id
-    const estimates = getMockEstimates(now).filter((e) => e.userId === user.id);
+    const estimates: Estimate[] = [];
+    if (user.isAnonymous) return { estimates, now };
+    const supabase = await createClient();
+    for (let offset = 0; ; offset += 1000) {
+        let query = supabase.from("estimates")
+            .select("id,user_id,created_at,site,model,prompt_chars,tokens,water_ml,low_ml,high_ml,methodology")
+            .eq("user_id", user.id).order("created_at", { ascending: false }).order("id")
+            .range(offset, offset + 999);
+        if (illustrativeOnly) query = query.eq("methodology", "ecoprompt-illustrative-v1");
+        const { data, error } = await query;
+        if (error) throw new Error(`Couldn't load estimates: ${error.message}`);
+        for (const row of data ?? []) estimates.push({
+            id: row.id, userId: row.user_id, createdAt: row.created_at, site: row.site,
+            model: row.model ?? "Unknown", promptChars: row.prompt_chars, tokens: row.tokens,
+            waterMl: row.water_ml, lowMl: row.low_ml, highMl: row.high_ml, methodology: row.methodology,
+        });
+        if (!data || data.length < 1000) break;
+    }
     return { estimates, now };
 }
 
@@ -70,7 +85,7 @@ export async function getEstimateFacets(): Promise<{ sites: string[]; models: st
 }
 
 export async function getUsageSeries(granularity: Granularity): Promise<UsagePoint[]> {
-    const { estimates, now } = await getUserEstimates();
+    const { estimates, now } = await getUserEstimates(true);
 
     const starts: number[] = [];
     let start = bucketStart(now.getTime(), granularity);
@@ -94,7 +109,7 @@ export async function getUsageSeries(granularity: Granularity): Promise<UsagePoi
 }
 
 export async function getUsageStats(): Promise<UsageStats> {
-    const { estimates, now } = await getUserEstimates();
+    const { estimates, now } = await getUserEstimates(true);
     const weekAgo = now.getTime() - 7 * DAY_MS;
     const twoWeeksAgo = now.getTime() - 14 * DAY_MS;
 

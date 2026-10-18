@@ -1,3 +1,4 @@
+import { estimatePrompt } from "./mockApi";
 import { findComposer, readComposer, applyRewrite } from "./integration";
 import { checkChatGPTModel, switchChatGPTModel, targetForModel, readChatGPTModelPassive } from "./modelSwitch";
 import { PassiveTracker } from "./services/passiveTracking";
@@ -27,6 +28,14 @@ function boot() {
   const tracker = new PassiveTracker(readChatGPTModelPassive, (optimisation) => {
     try { void chrome.runtime.sendMessage({ type: "ECO_RECORD_OPTIMISATION", optimisation }).catch(() => {}); }
     catch { /* Never let extension storage interrupt submission. */ }
+  }, Date.now, (text, model, at) => {
+    const estimate = estimatePrompt(text);
+    const metadata = { id: crypto.randomUUID(), createdAt: at, site: location.hostname,
+      promptChars: text.length, tokens: estimate.inputTokens + estimate.predictedOutputTokens,
+      complexity: ({ Simple: "easy", Moderate: "medium", Advanced: "hard" } as const)[estimate.complexity],
+      waterMl: estimate.baseline.waterMl, energyWh: estimate.baseline.energyWh,
+      model, methodology: "ecoprompt-illustrative-v1" };
+    void chrome.runtime.sendMessage({ type: "ECO_USAGE", estimate: metadata }).catch(() => {});
   });
   const recordSearch = () => {
     void chrome.runtime.sendMessage({ type: "ECO_RECORD_SEARCH", event: { id: crypto.randomUUID(), timestamp: Date.now() } }).catch(() => {});
