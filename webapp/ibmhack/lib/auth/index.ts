@@ -31,7 +31,8 @@ export async function getCurrentUser(): Promise<User> {
 export function safeNext(next: unknown): string {
   return typeof next === "string" &&
     next.startsWith("/") &&
-    !next.startsWith("//")
+    !next.startsWith("//") &&
+    !/[\\\x00-\x1f\x7f]/.test(next)
     ? next
     : "/dashboard";
 }

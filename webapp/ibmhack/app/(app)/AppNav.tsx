@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { FEATURES } from "../../lib/features";
 import styles from "./layout.module.scss";
 
 const LINKS = [
@@ -10,7 +11,7 @@ const LINKS = [
   { href: "/compare", label: "Compare", icon: "M4 20V10M10 20V4M16 20v-7M22 20H2" },
   { href: "/bulk", label: "Bulk check", icon: "M4 6h16M4 12h16M4 18h10" },
   { href: "/leaderboard", label: "Leaderboard", icon: "M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4" },
-];
+].filter((l) => l.href !== "/compare" || FEATURES.compareModels);
 
 export default function AppNav() {
   const pathname = usePathname();

@@ -3,7 +3,8 @@ import { getCurrentUser } from "../auth";
 import { getModel } from "../estimation/models";
 import type { Challenge, LeaderboardEntry } from "../types";
 import { DAY_MS, startOfDay, startOfWeek } from "./dates";
-import { getMockEstimates, MOCK_USERS } from "./mock";
+import { createClient } from "../supabase/server";
+import { getUserEstimates } from "./estimates";
 
 export const MIN_PROMPTS_TO_RANK = 10;
 
@@ -18,33 +19,21 @@ export async function getWeeklyLeaderboard(minPrompts = MIN_PROMPTS_TO_RANK): Pr
     await connection();
     const now = new Date();
     const since = now.getTime() - 7 * DAY_MS;
-    // TODO(auth): the user comes from the Supabase session once login exists
     const currentUser = await getCurrentUser();
+    if (currentUser.isAnonymous) return { entries: [], minPrompts, since: new Date(since).toISOString() };
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc("weekly_leaderboard_v1");
+    if (error) throw new Error(`Couldn't load leaderboard: ${error.message}`);
+    const entries: LeaderboardEntry[] = (data ?? []).map((row: {
+        user_id: string; username: string; display_name: string | null;
+        prompts: number; total_ml: number; avg_ml: number; total_wh: number | null;
+    }) => ({
+        user: { id: row.user_id, name: row.display_name ?? row.username, isAnonymous: false },
+        prompts: Number(row.prompts), totalMl: row.total_ml, avgMl: row.avg_ml, totalWh: row.total_wh,
+        rank: null, isCurrentUser: row.user_id === currentUser.id,
+    }));
 
-    // TODO(supabase): replace with an aggregate query (or view) grouped by user_id over the past 7 days,
-    // joined to profiles for display names
-    const totals = new Map<string, { prompts: number; totalMl: number }>();
-    for (const e of getMockEstimates(now)) {
-        if (Date.parse(e.createdAt) <= since) continue;
-        const t = totals.get(e.userId) ?? { prompts: 0, totalMl: 0 };
-        t.prompts += 1;
-        t.totalMl += e.waterMl;
-        totals.set(e.userId, t);
-    }
-
-    const entries: LeaderboardEntry[] = MOCK_USERS.map((user) => {
-        const t = totals.get(user.id) ?? { prompts: 0, totalMl: 0 };
-        return {
-            user,
-            prompts: t.prompts,
-            totalMl: t.totalMl,
-            avgMl: t.prompts ? t.totalMl / t.prompts : 0,
-            rank: null,
-            isCurrentUser: user.id === currentUser.id,
-        };
-    });
-
-    const ranked = entries.filter((e) => e.prompts >= minPrompts).sort((a, b) => a.avgMl - b.avgMl);
+    const ranked = entries.filter((e) => e.prompts >= minPrompts).sort((a, b) => a.avgMl - b.avgMl || a.user.id.localeCompare(b.user.id));
     ranked.forEach((e, i) => (e.rank = i + 1));
     const unranked = entries.filter((e) => e.prompts < minPrompts).sort((a, b) => b.prompts - a.prompts);
 
@@ -57,10 +46,7 @@ export async function getChallenges(): Promise<Challenge[]> {
     const now = new Date();
     const weekStart = startOfWeek(now.getTime());
     const endsAt = new Date(weekStart + 7 * DAY_MS).toISOString();
-    // TODO(auth): the user comes from the Supabase session once login exists
-    const user = await getCurrentUser();
-    // TODO(supabase): read challenge definitions from a challenges table and progress from estimates
-    const mine = getMockEstimates(now).filter((e) => e.userId === user.id);
+    const { estimates: mine } = await getUserEstimates(true);
     const thisWeek = mine.filter((e) => Date.parse(e.createdAt) >= weekStart);
 
     const activeDays = new Set(mine.map((e) => startOfDay(Date.parse(e.createdAt))));
@@ -85,7 +71,7 @@ export async function getChallenges(): Promise<Challenge[]> {
         {
             id: "water-budget",
             title: "Weekly water budget",
-            description: "Keep your total water use under 35 mL this week.",
+            description: "Keep your illustrative estimated water use under 35 mL this week.",
             kind: "stay-under",
             progress: thisWeek.reduce((sum, e) => sum + e.waterMl, 0),
             target: 35,

@@ -47,7 +47,7 @@ export default function LeaderboardPage() {
     <>
       <PageHeader
         title="Leaderboard"
-        description="See how your prompting compares, and take on a few challenges to bring your water use down."
+        description="Past seven days of illustrative extension v1 estimates only, not measured consumption or savings. Other methodologies are excluded. Only opted-in profiles appear."
       />
       <div className={styles.layout}>
         <Suspense fallback={<Skeleton height={520} label="Loading leaderboard" />}>

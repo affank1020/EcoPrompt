@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { Granularity, UsagePoint } from "../../lib/types";
-import { formatDate, formatMl, formatRange } from "../ui/format";
+import { formatDate, formatMl, formatRange, formatWh } from "../ui/format";
 import SegmentedToggle from "../ui/SegmentedToggle";
 import { CHART_COLORS } from "./palette";
 import styles from "./UsageChart.module.scss";
@@ -34,7 +34,8 @@ function ChartTooltip({ active, payload, granularity }: { active?: boolean; payl
     return (
         <div className={styles.tooltip}>
             <span className={styles.tooltipDate}>{prefix}{formatDate(d.start, format)}</span>
-            <strong>{formatMl(d.waterMl)}</strong>
+            <strong>{formatMl(d.waterMl)} estimated water</strong>
+            <span>{formatWh(d.energyWh)} estimated energy</span>
             <span className={styles.tooltipMuted}>Range {formatRange(d.lowMl, d.highMl)}</span>
             <span className={styles.tooltipMuted}>{d.prompts} prompts</span>
         </div>
@@ -42,6 +43,7 @@ function ChartTooltip({ active, payload, granularity }: { active?: boolean; payl
 }
 
 export default function UsageChart({ series }: Props) {
+    const [metric, setMetric] = useState<"waterMl" | "energyWh">("waterMl");
     const [granularity, setGranularity] = useState<Granularity>("day");
     const data: Datum[] = series[granularity].map((p) => ({ ...p, range: [p.lowMl, p.highMl] }));
 
@@ -49,14 +51,15 @@ export default function UsageChart({ series }: Props) {
         <section className={styles.card}>
             <header className={styles.header}>
                 <div>
-                    <h2 className={styles.title}>Water use over time</h2>
+                    <h2 className={styles.title}>Estimated usage over time</h2>
                     <p className={styles.legend}>
                         <span className={styles.legendLine} /> Estimate
-                        <span className={styles.legendBand} /> Uncertainty range
+                        {metric === "waterMl" && <><span className={styles.legendBand} /> Uncertainty range</>}
                     </p>
                 </div>
                 <SegmentedToggle options={GRANULARITIES} value={granularity} onChange={setGranularity} ariaLabel="Group by" />
             </header>
+            <SegmentedToggle options={[{ value: "waterMl", label: "Water" }, { value: "energyWh", label: "Energy" }]} value={metric} onChange={setMetric} ariaLabel="Resource" />
             <div className={styles.chart}>
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
@@ -76,16 +79,16 @@ export default function UsageChart({ series }: Props) {
                             minTickGap={24}
                         />
                         <YAxis
-                            tickFormatter={(v: number) => formatMl(v)}
+                            tickFormatter={(v: number) => metric === "waterMl" ? formatMl(v) : formatWh(v)}
                             tick={{ fontSize: 12, fill: CHART_COLORS.muted }}
                             axisLine={false}
                             tickLine={false}
                             width={64}
                         />
                         <Tooltip content={<ChartTooltip granularity={granularity} />} />
-                        <Area dataKey="range" stroke="none" fill={CHART_COLORS.waterFaint} fillOpacity={0.7} isAnimationActive={false} />
+                        {metric === "waterMl" && <Area dataKey="range" stroke="none" fill={CHART_COLORS.waterFaint} fillOpacity={0.7} isAnimationActive={false} />}
                         <Area
-                            dataKey="waterMl"
+                            dataKey={metric}
                             stroke={CHART_COLORS.water}
                             strokeWidth={2}
                             fill="url(#usage-fill)"

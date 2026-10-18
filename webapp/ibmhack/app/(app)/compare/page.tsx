@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { notFound } from "next/navigation";
 import ComparePanel from "../../../components/compare/ComparePanel";
 import PageHeader from "../../../components/ui/PageHeader";
 import { DEMO_MODEL_IDS, MODELS } from "../../../lib/estimation/models";
+import { FEATURES } from "../../../lib/features";
 
 export const metadata: Metadata = { title: "Compare models · HydroPrompt" };
 
@@ -23,6 +25,8 @@ async function Compare({ searchParams }: { searchParams: PageProps<"/compare">["
 }
 
 export default function ComparePage(props: PageProps<"/compare">) {
+  // Before any Suspense boundary, so the response is a real 404 rather than a streamed one
+  if (!FEATURES.compareModels) notFound();
   return (
     <>
       <PageHeader

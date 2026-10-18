@@ -5,7 +5,7 @@ import { compressPrompt } from "../../lib/compression/actions";
 import { checkPrompt } from "../../lib/estimation/actions";
 import { DEFAULT_MODEL_ID, getModel, MODELS } from "../../lib/estimation/models";
 import type { CompressionResult, EstimateResult } from "../../lib/types";
-import { formatNumber } from "../ui/format";
+import { formatNumber, formatWh } from "../ui/format";
 import UncertaintyRange from "../ui/UncertaintyRange";
 import CompressionPanel from "./CompressionPanel";
 import styles from "./PromptChecker.module.scss";
@@ -113,7 +113,11 @@ export default function PromptChecker({ variant }: Props) {
                             {formatNumber(checked.result.tokens)} tokens{model ? ` · ${model.size} model` : ""}
                         </span>
                     </header>
+                    {checked.result.methodology === "backend-token-v1" ? (
+                        <p>Backend token approximation · model independent · no uncertainty interval supplied.</p>
+                    ) : <p>Illustrative website mock estimate · not measured consumption.</p>}
                     <UncertaintyRange {...checked.result} size="lg" />
+                    <p>{formatWh(checked.result.energyWh)} estimated energy</p>
 
                     {compression ? (
                         <CompressionPanel

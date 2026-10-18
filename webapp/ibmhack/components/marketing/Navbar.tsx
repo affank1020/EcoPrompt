@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FEATURES } from "../../lib/features";
 import "../../styles/navbar.scss";
 
 export default function Navbar() {
@@ -13,7 +14,7 @@ export default function Navbar() {
             </Link>
             <div className="navbar__links">
                 <a href="#methodology" className="navbar__links__link">How it works</a>
-                <a href="#compare" className="navbar__links__link">Compare</a>
+                {FEATURES.compareModels && <a href="#compare" className="navbar__links__link">Compare</a>}
                 <a href="#why-water" className="navbar__links__link">Why water</a>
                 <a href="#extension" className="navbar__links__link">Extension</a>
                 <a href="#faq" className="navbar__links__link">FAQ</a>

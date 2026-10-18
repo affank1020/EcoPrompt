@@ -1,5 +1,5 @@
 import type { LeaderboardEntry } from "../../lib/types";
-import { formatMl, formatNumber } from "../ui/format";
+import { formatMl, formatNumber, formatWh } from "../ui/format";
 import styles from "./LeaderboardTable.module.scss";
 
 type Props = {
@@ -38,8 +38,11 @@ export default function LeaderboardTable({ entries, minPrompts }: Props) {
                 ) : null}
             </td>
             <td className={styles.numeric}>{formatMl(e.totalMl)}</td>
+            <td className={styles.numeric}>{formatWh(e.totalWh)}</td>
         </tr>
     );
+
+    if (!entries.length) return <p>No visible illustrative estimates this week yet.</p>;
 
     return (
         <div className={styles.wrap}>
@@ -50,14 +53,15 @@ export default function LeaderboardTable({ entries, minPrompts }: Props) {
                         <th scope="col">Name</th>
                         <th scope="col" className={styles.numeric}>Prompts</th>
                         <th scope="col">Avg water per prompt</th>
-                        <th scope="col" className={styles.numeric}>Total</th>
+                        <th scope="col" className={styles.numeric}>Estimated water</th>
+                        <th scope="col" className={styles.numeric}>Estimated energy</th>
                     </tr>
                 </thead>
                 <tbody>{ranked.map(row)}</tbody>
                 {unranked.length ? (
                     <tbody className={styles.unranked}>
                         <tr>
-                            <th colSpan={5} scope="rowgroup" className={styles.divider}>
+                            <th colSpan={6} scope="rowgroup" className={styles.divider}>
                                 Not ranked yet · fewer than {minPrompts} prompts this week
                             </th>
                         </tr>
