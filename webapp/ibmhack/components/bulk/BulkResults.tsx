@@ -26,8 +26,8 @@ export default function BulkResults({ prompts, results, model }: Props) {
 
     const download = () => {
         const csv = toCsv([
-            ["prompt", "model", "tokens", "water_ml", "low_ml", "high_ml"],
-            ...results.map((r, i) => [prompts[i], r.model, r.tokens, r.waterMl.toFixed(4), r.lowMl.toFixed(4), r.highMl.toFixed(4)]),
+            ["prompt", "model", "tokens", "water_ml", "low_ml", "high_ml", "methodology"],
+            ...results.map((r, i) => [prompts[i], r.model, r.tokens, r.waterMl.toFixed(4), r.methodology === "backend-token-v1" ? "" : r.lowMl.toFixed(4), r.methodology === "backend-token-v1" ? "" : r.highMl.toFixed(4), r.methodology ?? "unspecified"]),
         ]);
         const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
         const a = Object.assign(document.createElement("a"), { href: url, download: "water-estimates.csv" });
@@ -37,14 +37,15 @@ export default function BulkResults({ prompts, results, model }: Props) {
 
     return (
         <section className={styles.results}>
+            <p>{results[0]?.methodology === "backend-token-v1" ? "Backend token approximation; model independent, no uncertainty interval supplied." : "Illustrative website mock estimates; not measured consumption."}</p>
             <header className={styles.header}>
                 <div>
                     <h2 className={styles.title}>
                         {formatNumber(results.length)} prompts on {model.name}
                     </h2>
                     <p className={styles.total}>
-                        <span className={styles.totalValue}>{formatMl(total.waterMl)}</span> in total · range{" "}
-                        {formatRange(total.lowMl, total.highMl)}
+                        <span className={styles.totalValue}>{formatMl(total.waterMl)}</span> estimated in total
+                        {results[0]?.methodology !== "backend-token-v1" && <> · range {formatRange(total.lowMl, total.highMl)}</>}
                     </p>
                 </div>
                 <button type="button" className={styles.download} onClick={download}>

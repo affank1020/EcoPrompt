@@ -1,4 +1,4 @@
-// Stand-in for the compression service, used only while COMPRESSION_API_URL is unset.
+// Stand-in for the compression service, used only while BACKEND_API_URL is unset.
 // It strips common filler so the UI has something realistic to show.
 
 const FILLER: RegExp[] = [

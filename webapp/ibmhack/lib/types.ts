@@ -9,6 +9,8 @@ export type Model = {
 
 // What the estimation API returns for one prompt
 export type EstimateResult = {
+    energyWh?: number | null;
+    methodology?: string;
     model: string;
     tokens: number;
     waterMl: number;
@@ -41,6 +43,7 @@ export type User = {
 export type Granularity = "day" | "week" | "month";
 
 export type UsagePoint = {
+    energyWh: number | null;
     start: string; // ISO date of the start of the bucket
     waterMl: number;
     lowMl: number;
@@ -49,6 +52,7 @@ export type UsagePoint = {
 };
 
 export type UsageStats = {
+    totalWh: number | null;
     prompts: number;
     totalMl: number;
     lowMl: number;
@@ -59,6 +63,7 @@ export type UsageStats = {
 };
 
 export type LeaderboardEntry = {
+    totalWh: number | null;
     user: User;
     prompts: number;
     avgMl: number;

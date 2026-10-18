@@ -24,6 +24,6 @@ export async function GET(request: NextRequest) {
     }
   }
   return NextResponse.redirect(
-    new URL("/login?error=Could not sign you in", origin),
+    new URL(`/login?error=Could not sign you in&next=${encodeURIComponent(safeNext(searchParams.get("next")))}`, origin),
   );
 }

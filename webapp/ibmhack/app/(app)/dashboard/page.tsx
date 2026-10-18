@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import UsageChart from "../../../components/charts/UsageChart";
 import PromptChecker from "../../../components/checker/PromptChecker";
-import { formatMl, formatNumber, formatRange } from "../../../components/ui/format";
+import { formatMl, formatNumber, formatRange, formatWh } from "../../../components/ui/format";
 import PageHeader from "../../../components/ui/PageHeader";
 import Skeleton from "../../../components/ui/Skeleton";
 import StatCard from "../../../components/ui/StatCard";
@@ -22,10 +22,11 @@ async function Stats() {
   return (
     <div className={styles.stats}>
       <StatCard
-        label="Total water"
+        label="Estimated water"
         value={formatMl(stats.totalMl)}
         sub={`Range ${formatRange(stats.lowMl, stats.highMl)} · about ${glasses < 1 ? "<1" : Math.round(glasses)} glass${glasses >= 1.5 ? "es" : ""}`}
       />
+      <StatCard label="Estimated energy" value={formatWh(stats.totalWh)} sub="Illustrative extension v1" />
       <StatCard label="Average per prompt" value={formatMl(stats.avgMl)} sub={`Across ${formatNumber(stats.prompts)} prompts`} />
       <StatCard label="Prompts checked" value={formatNumber(stats.prompts)} sub="Since you started tracking" />
       <StatCard

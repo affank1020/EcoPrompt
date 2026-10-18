@@ -31,3 +31,10 @@ export function formatDateTime(iso: string): string {
         minute: "2-digit",
     });
 }
+
+export function formatWh(wh: number | null | undefined): string {
+    if (wh == null || !Number.isFinite(wh)) return "Unavailable";
+    if (wh >= 1000) return `${(wh / 1000).toLocaleString("en", { maximumFractionDigits: 2 })} kWh`;
+    if (wh > 0 && wh < 0.001) return "<0.001 Wh";
+    return `${wh.toLocaleString("en", { maximumFractionDigits: 3 })} Wh`;
+}

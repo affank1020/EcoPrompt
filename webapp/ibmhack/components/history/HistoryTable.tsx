@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { SortKey } from "../../lib/data/estimates";
 import { getModel } from "../../lib/estimation/models";
 import type { Estimate } from "../../lib/types";
-import { formatDateTime, formatNumber } from "../ui/format";
+import { formatDateTime, formatNumber, formatWh } from "../ui/format";
 import UncertaintyRange from "../ui/UncertaintyRange";
 import { historyHref, type HistoryParams } from "./params";
 import styles from "./HistoryTable.module.scss";
@@ -18,6 +18,7 @@ const COLUMNS: { key: SortKey; label: string; numeric?: boolean }[] = [
     { key: "model", label: "Model" },
     { key: "length", label: "Prompt length", numeric: true },
     { key: "water", label: "Estimated water" },
+    { key: "energy", label: "Estimated energy" },
 ];
 
 export default function HistoryTable({ rows, params }: Props) {
@@ -56,7 +57,7 @@ export default function HistoryTable({ rows, params }: Props) {
                         return (
                             <tr key={row.id}>
                                 <td className={styles.date}>{formatDateTime(row.createdAt)}</td>
-                                <td>{row.site}<span className={styles.subtle}>{row.methodology === "ecoprompt-illustrative-v1" ? "Illustrative extension estimate" : "Other / legacy methodology"}</span></td>
+                                <td>{row.site}<span className={styles.subtle}>{row.methodology === "ecoprompt-illustrative-v1" ? "Illustrative extension estimate" : row.methodology ?? "Legacy / unspecified"}</span></td>
                                 <td>
                                     <span className={`${styles.dot} ${model ? styles[model.size] : ""}`} aria-hidden="true" />
                                     {model?.name ?? row.model}
@@ -68,6 +69,7 @@ export default function HistoryTable({ rows, params }: Props) {
                                 <td className={styles.water}>
                                     <UncertaintyRange {...row} scaleMax={scaleMax} />
                                 </td>
+                                <td>{formatWh(row.energyWh)}</td>
                             </tr>
                         );
                     })}

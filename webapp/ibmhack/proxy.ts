@@ -29,7 +29,7 @@
     const path = request.nextUrl.pathname;
     const isProtected = PROTECTED.some((p) => path === p || path.startsWith(`${p}/`));
     if (!data?.claims && isProtected) {
-      return NextResponse.redirect(new URL(`/login?next=${encodeURIComponent(path)}`,
+      return NextResponse.redirect(new URL(`/login?next=${encodeURIComponent(path + request.nextUrl.search)}`,
   request.url));
     }
     return response;

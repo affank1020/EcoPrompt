@@ -8,7 +8,7 @@ export type HistoryParams = {
     page: number;
 };
 
-const SORT_KEYS: SortKey[] = ["date", "site", "model", "length", "water"];
+const SORT_KEYS: SortKey[] = ["date", "site", "model", "length", "water", "energy"];
 
 type RawParams = { [key: string]: string | string[] | undefined };
 

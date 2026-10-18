@@ -46,7 +46,7 @@ export default function CompressionPanel({ original, result, onUse, onDismiss }:
             <div className={styles.savings}>
                 <span className={styles.savedValue}>−{formatMl(savedMl)}</span>
                 <span className={styles.savedDetail}>
-                    {savedPct.toFixed(0)}% less water · {formatNumber(savedTokens)} fewer tokens
+                    {savedPct.toFixed(0)}% lower estimated water · {formatNumber(savedTokens)} fewer tokens
                 </span>
             </div>
 
@@ -77,7 +77,7 @@ export default function CompressionPanel({ original, result, onUse, onDismiss }:
             </div>
 
             <p className={styles.scale}>
-                Across {formatNumber(SCALE_PROMPTS)} prompts like this, that&apos;s {formatMl(savedMl * SCALE_PROMPTS)} saved.
+                Across {formatNumber(SCALE_PROMPTS)} prompts like this, the potential estimated reduction is {formatMl(savedMl * SCALE_PROMPTS)}. This is not recorded savings.
             </p>
 
             <div className={styles.actions}>
