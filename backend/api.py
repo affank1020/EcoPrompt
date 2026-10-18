@@ -1,7 +1,7 @@
 import os
 from typing import Literal
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import tiktoken
@@ -63,6 +63,25 @@ def calculate_consumption(input_tokens, label):
 
     return water_cost, energy_cost
 
+def analyse_one(prompt: str, epsilon: float):
+    if not prompt.strip():
+        raise HTTPException(status_code=422, detail="Prompts must not be empty.")
+    if len(prompt) > 50000:
+        raise HTTPException(
+            status_code=422,
+            detail="Each prompt must be 50000 characters or fewer.",
+        )
+
+    label, probabilities = classify(prompt, epsilon)
+    tokens = convert_to_tokens(prompt)
+    water_cost, energy_cost = calculate_consumption(tokens, label)
+    return {
+        "prompt": prompt,
+        "label": label,
+        "probabilities": probabilities,
+        "water_cost": water_cost,
+        "energy_cost": energy_cost,
+}
 
 @app.get("/")
 async def read_root():
