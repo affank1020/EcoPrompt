@@ -1,7 +1,8 @@
 import os
+import secrets
 from typing import Annotated, Literal
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, Header, HTTPException
 from pydantic import BaseModel, Field, AfterValidator
 from fastapi.middleware.cors import CORSMiddleware
 import tiktoken
@@ -25,6 +26,13 @@ if any("*" in origin for origin in origins):
 app.add_middleware(CORSMiddleware, allow_origins=origins,
     allow_methods=["GET", "POST"], allow_headers=["Content-Type", "Authorization"])
 
+API_KEY = os.getenv("API_KEY", "")
+if not API_KEY and os.getenv("APP_ENV", "development") != "development":
+    raise ValueError("API_KEY must be set outside development")
+
+def require_api_key(x_api_key: Annotated[str | None, Header()] = None):
+    if API_KEY and not secrets.compare_digest((x_api_key or "").encode(), API_KEY.encode()):
+        raise HTTPException(status_code=401, detail="Invalid or missing API key")
 
 def nonblank(value: str) -> str:
     if not value.strip():
@@ -84,19 +92,19 @@ def analyse_one(prompt: str, epsilon: float):
             "water_cost": water_cost, "energy_cost": energy_cost, "tokens": len(tokens)}
 
 
-@app.post("/analyse")
+@app.post("/analyse", dependencies=[Depends(require_api_key)])
 def analyse_prompt(req: PromptRequest):
     return analyse_one(req.prompt, req.epsilon)
 
 
-@app.post("/analyse/bulk")
+@app.post("/analyse/bulk", dependencies=[Depends(require_api_key)])
 def analyse_bulk(req: BulkPromptRequest):
     # Validate the entire request first. Failures abort the request (no partial result).
     results = [analyse_one(prompt, req.epsilon) for prompt in req.prompts]
     return {"results": results, "count": len(results)}
 
 
-@app.post("/compress")
+@app.post("/compress", dependencies=[Depends(require_api_key)])
 def compress_prompt(req: CompressRequest):
     result = compressor.compress(req.prompt, req.preset)
     # Never log prompt text: counts and timing only.

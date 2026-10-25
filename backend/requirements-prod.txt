@@ -1,0 +1,19 @@
+# Server-only dependencies, pinned to the versions the API was tested with.
+# torch is installed separately in the Dockerfile from the CPU-only index.
+# scikit-learn, numpy and joblib must match artifacts/metrics.json "versions".
+fastapi==0.162.0
+pydantic==2.14.1
+uvicorn==0.54.0
+tiktoken==0.14.0
+joblib==1.6.0
+numpy==2.5.4
+scipy==1.18.1
+scikit-learn==1.9.1
+transformers==5.20.2
+tokenizers==0.23.3
+safetensors==0.8.0
+accelerate==1.15.0
+peft==0.21.2
+huggingface_hub==1.33.0
+llmlingua==0.2.2
+nltk==3.10.4

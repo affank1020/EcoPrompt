@@ -75,14 +75,45 @@ class ApiTests(unittest.TestCase):
 
     def test_cors_exact_origins_and_production_default(self):
         for env, origin, expected in [({}, "http://localhost:3000", True), ({}, "https://evil.test", False),
-            ({"APP_ENV": "production"}, "http://localhost:3000", False),
-            ({"APP_ENV": "production", "ALLOWED_ORIGINS": "chrome-extension://abc,https://example.test"}, "chrome-extension://abc", True),
+            ({"APP_ENV": "production", "API_KEY": "k"}, "http://localhost:3000", False),
+            ({"APP_ENV": "production", "API_KEY": "k", "ALLOWED_ORIGINS": "chrome-extension://abc,https://example.test"}, "chrome-extension://abc", True),
             ({"ALLOWED_ORIGINS": "chrome-extension://abc"}, "chrome-extension://other", False)]:
             client = TestClient(load_api(env).app)
             response = client.options("/analyse", headers={"Origin": origin, "Access-Control-Request-Method": "POST"})
             self.assertEqual(response.headers.get("access-control-allow-origin"), origin if expected else None)
         with self.assertRaises(ValueError):
             load_api({"ALLOWED_ORIGINS": "*"})
+
+
+class ApiKeyTests(unittest.TestCase):
+    def setUp(self):
+        self.api = load_api({"API_KEY": "secret"})
+        self.client = TestClient(self.api.app)
+        self.requests = [("/analyse", {"prompt": "ok"}), ("/analyse/bulk", {"prompts": ["ok"]}),
+                         ("/compress", {"prompt": "some long text"})]
+
+    def test_missing_or_wrong_key_is_rejected_before_inference(self):
+        for headers in [{}, {"X-API-Key": "wrong"}, {"X-API-Key": ""}, {"X-API-Key": "sécret".encode()}]:
+            for path, payload in self.requests:
+                with self.subTest(path=path, headers=headers):
+                    self.assertEqual(self.client.post(path, json=payload, headers=headers).status_code, 401)
+        # Unauthenticated callers can't probe validation either
+        self.assertEqual(self.client.post("/analyse", json={"prompt": ""}).status_code, 401)
+        self.api.classify.assert_not_called()
+        self.api.compressor.compress.assert_not_called()
+
+    def test_correct_key_is_accepted(self):
+        for path, payload in self.requests:
+            with self.subTest(path=path):
+                response = self.client.post(path, json=payload, headers={"X-API-Key": "secret"})
+                self.assertEqual(response.status_code, 200)
+
+    def test_health_check_stays_open(self):
+        self.assertEqual(self.client.get("/").status_code, 200)
+
+    def test_production_requires_a_key(self):
+        with self.assertRaises(ValueError):
+            load_api({"APP_ENV": "production"})
 
 
 if __name__ == "__main__":

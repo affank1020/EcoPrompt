@@ -6,7 +6,7 @@ export async function estimate(prompt: string, model: string): Promise<EstimateR
     const baseUrl = process.env.BACKEND_API_URL;
     if (!baseUrl) return mockEstimate(prompt.length, model);
     const res = await fetch(`${baseUrl.replace(/\/$/, "")}/analyse`, {
-        method: "POST", headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json", "X-API-Key": process.env.BACKEND_API_KEY ?? "" },
         body: JSON.stringify({ prompt, epsilon: 0.5 }), cache: "no-store",
         signal: AbortSignal.timeout(60000),
     });
@@ -31,7 +31,7 @@ export async function estimateMany(prompts: string[], model: string): Promise<Es
     const baseUrl = process.env.BACKEND_API_URL;
     if (!baseUrl) return prompts.map(prompt => mockEstimate(prompt.length, model));
     const res = await fetch(`${baseUrl.replace(/\/$/, "")}/analyse/bulk`, {
-        method: "POST", headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json", "X-API-Key": process.env.BACKEND_API_KEY ?? "" },
         body: JSON.stringify({ prompts, epsilon: 0.5 }), cache: "no-store",
         signal: AbortSignal.timeout(180000),
     });

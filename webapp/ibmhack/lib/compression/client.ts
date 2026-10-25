@@ -13,7 +13,7 @@ export async function compress(prompt: string, preset: CompressionPreset = "bala
         } };
     }
     const res = await fetch(`${baseUrl.replace(/\/$/, "")}/compress`, {
-        method: "POST", headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json", "X-API-Key": process.env.BACKEND_API_KEY ?? "" },
         body: JSON.stringify({ prompt, preset }), cache: "no-store",
         signal: AbortSignal.timeout(60000),
     });
