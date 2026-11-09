@@ -120,6 +120,8 @@ The API has no authentication, and both endpoints are expensive. The website cal
 
 ### 1.6 Choose a host and deploy
 
+> **Done:** the API runs in full mode on an Oracle Cloud Always Free VM at `https://140-238-80-190.sslip.io`. See [api-redeploy.md](api-redeploy.md) for redeploying and rebuilding it, and [api-smoke-tests.md](api-smoke-tests.md) for testing it. The options below are kept for reference.
+
 Prices are rough; check the current pricing.
 
 | Mode | Good options |

@@ -1,0 +1,82 @@
+@use "../../styles/variables" as *;
+
+.page {
+    flex: 1;
+    width: 100%;
+    padding: $space-7 20px 96px;
+    background: $surface-alt;
+    color: $ink-soft;
+}
+
+.article {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: $space-7;
+    border-radius: $radius-lg;
+    background: $surface;
+    box-shadow: $shadow-sm;
+    font-size: 15px;
+    line-height: 1.7;
+
+    @media (max-width: $bp-md) {
+        padding: $space-5;
+    }
+
+    h2 {
+        margin: $space-6 0 $space-2;
+        font-size: 20px;
+        font-weight: 600;
+        color: $ink;
+    }
+
+    h3 {
+        margin: $space-4 0 $space-1;
+        font-size: 16px;
+        font-weight: 600;
+        color: $ink;
+    }
+
+    p + p,
+    ul + p,
+    p + ul {
+        margin-top: $space-2;
+    }
+
+    ul {
+        padding-left: 22px;
+        list-style: disc;
+    }
+
+    li + li {
+        margin-top: $space-1;
+    }
+
+    a {
+        color: $water-700;
+        text-decoration: underline;
+    }
+}
+
+.back {
+    font-size: 14px;
+    font-weight: 600;
+
+    .article & {
+        text-decoration: none;
+    }
+}
+
+.title {
+    margin-top: $space-4;
+    font-family: $font-serif;
+    font-size: clamp(34px, 5vw, 44px);
+    font-weight: 400;
+    line-height: 1.1;
+    color: $ink;
+}
+
+.updated {
+    margin: $space-1 0 $space-5;
+    font-size: 13px;
+    color: $muted;
+}

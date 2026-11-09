@@ -62,6 +62,9 @@ async function SignupForm({
       <p className={styles.footer}>
         Already have an account? <Link href={loginHref}>Log in</Link>
       </p>
+      <p className={styles.footer}>
+        By signing up you agree to our <Link href="/privacy">privacy policy</Link>.
+      </p>
     </form>
   );
 }

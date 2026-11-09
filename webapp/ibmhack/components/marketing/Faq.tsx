@@ -1,13 +1,28 @@
+import type { ReactNode } from "react";
+import Link from "next/link";
 import styles from "./Faq.module.scss";
 
-const QUESTIONS = [
+const QUESTIONS: { q: string; a: ReactNode }[] = [
     {
         q: "Do you store my prompts?",
-        a: "Synced usage history contains counts and estimates, not prompt text. Analysis and rewriting can send text to the configured backend; local extension history can retain drafts.",
+        a: (
+            <>
+                No. Synced usage history contains counts and estimates, not prompt text. Checking or compressing a prompt
+                sends its text to our analysis server, which doesn&apos;t store or log it; local extension history can
+                keep drafts on your own device. See our <Link href="/privacy">privacy policy</Link>.
+            </>
+        ),
     },
     {
         q: "How accurate are the numbers?",
-        a: "These are illustrative estimates, not measurements. The dashboard and leaderboard use only extension v1 estimates; other methods remain separate in history. Backend analysis uses a different token-based approximation.",
+        a: (
+            <>
+                They&apos;re estimates, not measurements. Website checks count your prompt&apos;s tokens, predict the
+                reply length from its complexity and apply one per-token rate for every model (see{" "}
+                <a href="#methodology">How it works</a>). The extension currently uses its own illustrative estimate; the
+                dashboard and leaderboard use only extension estimates, and history labels the two methods separately.
+            </>
+        ),
     },
     {
         q: "Do I need an account?",

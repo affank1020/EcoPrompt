@@ -146,29 +146,34 @@
     }
 }
 
-.bandTrack {
-    position: relative;
-    height: 14px;
-    border-radius: $radius-pill;
-    background: linear-gradient(90deg, rgba(127, 187, 230, 0.25), rgba(127, 187, 230, 0.7) 20%, rgba(127, 187, 230, 0.25));
-}
-
-.bandMarker {
-    position: absolute;
-    top: -4px;
-    width: 4px;
-    height: 22px;
-    margin-left: -2px;
-    border-radius: 2px;
-    background: white;
-}
-
-.bandLabels {
+.levels {
     display: flex;
-    justify-content: space-between;
-    margin: $space-2 0 $space-4;
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.7);
+    flex-direction: column;
+    gap: $space-2;
+    margin: $space-3 0 $space-4;
+}
+
+.level {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-2 $space-3;
+    border-radius: $radius-sm;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.72);
+
+    strong {
+        color: white;
+    }
+}
+
+.levelName {
+    font-family: $font-mono;
+    font-size: 13px;
+    color: $water-300;
 }
 
 .sources {

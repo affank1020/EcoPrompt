@@ -1,28 +1,27 @@
 import {
     ASSUMPTIONS,
-    CHARS_PER_TOKEN,
     ENERGY_WH_PER_1K_TOKENS,
     FORMULA,
-    HIGH_MULTIPLIER,
-    LOW_MULTIPLIER,
-    RESPONSE_TOKENS,
-    UNCERTAINTY_NOTE,
-    WATER_ML_PER_WH,
+    LIMITATIONS,
+    OUTPUT_MULTIPLIER,
+    WATER_ML_PER_1K_TOKENS,
+    energyWh,
+    totalTokens,
+    waterMl,
 } from "../../lib/estimation/methodology";
-import { mockEstimate } from "../../lib/estimation/mock";
-import { DEMO_MODEL_IDS, getModel } from "../../lib/estimation/models";
 import { SOURCES } from "../../lib/estimation/sources";
-import { formatMl, formatRange } from "../ui/format";
+import type { Complexity } from "../../lib/types";
+import { formatMl, formatNumber, formatWh } from "../ui/format";
 import styles from "./Methodology.module.scss";
 
-const EXAMPLE_CHARS = 400;
+const EXAMPLE_TOKENS = 200;
+const EXAMPLE_COMPLEXITY: Complexity = "medium";
+const COMPLEXITIES: Complexity[] = ["easy", "medium", "hard"];
 
 export default function Methodology() {
-    const exampleModel = getModel(DEMO_MODEL_IDS[0])!;
-    const example = mockEstimate(EXAMPLE_CHARS, exampleModel.id);
+    const replyTokens = EXAMPLE_TOKENS * OUTPUT_MULTIPLIER[EXAMPLE_COMPLEXITY];
+    const total = totalTokens(EXAMPLE_TOKENS, EXAMPLE_COMPLEXITY);
     const sourceNumber = (id: string) => SOURCES.findIndex((s) => s.id === id) + 1;
-    // Where the central value sits on the low–high band
-    const centralPct = ((1 - LOW_MULTIPLIER) / (HIGH_MULTIPLIER - LOW_MULTIPLIER)) * 100;
 
     return (
         <section id="methodology" className={styles.section}>
@@ -30,8 +29,9 @@ export default function Methodology() {
                 <p className={styles.eyebrow}>Methodology</p>
                 <h2 className={styles.title}>How we estimate the water behind a prompt</h2>
                 <p className={styles.lead}>
-                    Every prompt runs on servers that draw electricity and need cooling. We estimate the energy your prompt
-                    uses, then the water evaporated to cool the data centre and the water used to generate its power.
+                    Every prompt runs on servers that draw electricity and need cooling. We count your prompt&apos;s tokens,
+                    predict how long the reply will be from how complex the prompt is, and turn the total into energy and
+                    water using per-token rates.
                 </p>
 
                 <div className={styles.formula}>
@@ -59,39 +59,44 @@ export default function Methodology() {
                     <div>
                         <h3 className={styles.subtitle}>Worked example</h3>
                         <p className={styles.body}>
-                            A {EXAMPLE_CHARS}-character prompt to {exampleModel.name} ({exampleModel.size} model):
+                            A {EXAMPLE_TOKENS}-token prompt (roughly {EXAMPLE_TOKENS * 4} characters) rated {EXAMPLE_COMPLEXITY}:
                         </p>
                         <ol className={styles.steps}>
                             <li>
-                                {EXAMPLE_CHARS} ÷ {CHARS_PER_TOKEN} + {RESPONSE_TOKENS} = <strong>{example.tokens} tokens</strong>
+                                Reply: {EXAMPLE_TOKENS} × {OUTPUT_MULTIPLIER[EXAMPLE_COMPLEXITY]} = <strong>{formatNumber(replyTokens)} tokens</strong>
                             </li>
                             <li>
-                                {example.tokens} ÷ 1000 × {ENERGY_WH_PER_1K_TOKENS[exampleModel.size]} Wh ={" "}
-                                <strong>{((example.tokens / 1000) * ENERGY_WH_PER_1K_TOKENS[exampleModel.size]).toFixed(3)} Wh</strong>
+                                Total: {EXAMPLE_TOKENS} + {formatNumber(replyTokens)} = <strong>{formatNumber(total)} tokens</strong>
                             </li>
                             <li>
-                                × {WATER_ML_PER_WH.toFixed(2)} mL per Wh = <strong>{formatMl(example.waterMl)}</strong>
+                                Energy: {formatNumber(total)} ÷ 1000 × {ENERGY_WH_PER_1K_TOKENS} Wh ={" "}
+                                <strong>{formatWh(energyWh(EXAMPLE_TOKENS, EXAMPLE_COMPLEXITY))}</strong>
+                            </li>
+                            <li>
+                                Water: {formatNumber(total)} ÷ 1000 × {WATER_ML_PER_1K_TOKENS} mL ={" "}
+                                <strong>{formatMl(waterMl(EXAMPLE_TOKENS, EXAMPLE_COMPLEXITY))}</strong>
                             </li>
                         </ol>
                     </div>
 
-                    <div className={styles.band}>
-                        <h3 className={styles.subtitle}>Uncertainty range</h3>
-                        <div className={styles.bandTrack} aria-hidden="true">
-                            <span className={styles.bandMarker} style={{ left: `${centralPct}%` }} />
-                        </div>
-                        <div className={styles.bandLabels}>
-                            <span>Low · {formatMl(example.lowMl)}</span>
-                            <span>Estimate · {formatMl(example.waterMl)}</span>
-                            <span>High · {formatMl(example.highMl)}</span>
-                        </div>
-                        <p className={styles.body}>{UNCERTAINTY_NOTE}</p>
-                        <p className={styles.small}>So this example is shown as {formatMl(example.waterMl)} ({formatRange(example.lowMl, example.highMl)}).</p>
+                    <div>
+                        <h3 className={styles.subtitle}>Complexity matters</h3>
+                        <p className={styles.body}>The same {EXAMPLE_TOKENS}-token prompt at each complexity:</p>
+                        <ul className={styles.levels}>
+                            {COMPLEXITIES.map((c) => (
+                                <li key={c} className={styles.level}>
+                                    <span className={styles.levelName}>{c}</span>
+                                    <span>{formatNumber(totalTokens(EXAMPLE_TOKENS, c))} tokens</span>
+                                    <strong>{formatMl(waterMl(EXAMPLE_TOKENS, c))}</strong>
+                                </li>
+                            ))}
+                        </ul>
+                        <p className={styles.body}>{LIMITATIONS}</p>
                     </div>
                 </div>
 
                 <div className={styles.sources}>
-                    <h3 className={styles.subtitle}>Sources</h3>
+                    <h3 className={styles.subtitle}>Sources and further reading</h3>
                     <ol className={styles.sourceList}>
                         {SOURCES.map((s) => (
                             <li key={s.id} id={`source-${s.id}`}>

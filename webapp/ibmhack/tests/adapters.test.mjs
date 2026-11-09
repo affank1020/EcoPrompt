@@ -145,9 +145,9 @@ test('persistence rejects unknown methods, missing energy and misaligned batches
 test('bulk uses one request for 200 ordered results with input-token accounting', async () => {
   let requests = 0;
   const prompts = Array.from({ length: 200 }, (_, i) => `prompt ${i % 5}`);
-  const { estimateMany } = load('lib/estimation/client.ts', { env: { BACKEND_API_URL: 'http://backend/' }, mocks: { './mock': {} }, fetch: async (url, options) => {
+  const { estimateMany } = load('lib/estimation/client.ts', { env: { BACKEND_API_URL: 'http://backend/', BACKEND_API_KEY: 'k' }, mocks: { './mock': {} }, fetch: async (url, options) => {
     requests++; assert.equal(url, 'http://backend/analyse/bulk');
-    assert.deepEqual(JSON.parse(options.body), { prompts, epsilon: .5 }); assert.ok(!('X-API-Key' in options.headers));
+    assert.deepEqual(JSON.parse(options.body), { prompts, epsilon: .5 }); assert.equal(options.headers['X-API-Key'], 'k');
     return { ok: true, json: async () => ({ count: 200, results: prompts.map((prompt, i) => ({ prompt, tokens: i, label: 'hard', water_cost: 100, energy_cost: 2 })) }) };
   } });
   const results = await estimateMany(prompts, 'model');
